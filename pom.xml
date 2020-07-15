@@ -16,24 +16,52 @@
 
 	<properties>
 		<java.version>1.8</java.version>
-	</properties>
 
+	</properties>
+	
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-r2dbc</artifactId>
 		</dependency>
+		<!-- security-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-ldap</artifactId>
+		</dependency>
+	
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-oauth2-client</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+    		<artifactId>spring-security-jwt</artifactId>
+    		<version>1.0.10.RELEASE</version>
+		</dependency>
+	
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+		</dependency>
+	
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webflux</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
+		<!--mysql r2dbc-->
 		<dependency>
 			<groupId>dev.miku</groupId>
 			<artifactId>r2dbc-mysql</artifactId>
@@ -66,6 +94,7 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
 
 	<build>
 		<plugins>

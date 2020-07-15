@@ -26,14 +26,19 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import static reactor.core.publisher.Mono.just;
 import org.springframework.data.r2dbc.core.DatabaseClient;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import com.project.backend.Model.*;
 import com.project.backend.Repository.UserRepository;
+import org.springframework.util.MultiValueMap;
 @Configuration
 class UserController {
+    
     private final UserRepository userRepository;
 
     private final DatabaseClient databaseClient;
@@ -43,6 +48,68 @@ class UserController {
         this.userRepository = userRepository;
     }
 
+    @Bean
+    public RouterFunction<?> join() {
+        return route(POST("/join"), req -> {
+            Mono<User> insertPub = req.bodyToMono(User.class);
+            return ok().body(insertPub.flatMap(u -> {
+                BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+                u.setPassword(passwordEncoder.encode(u.getPassword()));
+                Mono<Integer> rs = databaseClient.execute(
+                    "insert into User(id, password, name, email) values( :id, :password, :name, :email)"
+                ).as(User.class).bind("id",u.getId())
+                .bind("password",u.getPassword())
+                .bind("name",u.getName())
+                .bind("email",u.getEmail())
+                .fetch()
+                .rowsUpdated()
+                .onErrorReturn(0); // 나같은 경우는 0로 해결봤다
+                return rs;
+            }) , Integer.class);
+        });
+    }
+    @Bean
+    public RouterFunction<?> login() {
+        return route(POST("/login"), req -> {
+            Mono<LoginModel> mUser = req.bodyToMono(LoginModel.class);
+            Mono<Integer> t = mUser.flatMap(u -> {
+                return databaseClient.execute("select * from User where id = :id")
+               .bind("id",u.getId())
+               .as(LoginModel.class)
+               .fetch()
+               .first().flatMap(nu -> {
+                   BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+                   if(passwordEncoder.matches(u.getPassword(), nu.getPassword())){
+                       return Mono.just(1);
+                   }
+                   return Mono.just(0);
+               });  
+           });
+        
+            return ok().body(t.subscribe(), Integer.class);
+        });
+    }
+
+    @Bean 
+    public  RouterFunction<?> logout() {
+        return route(GET("/logout"), req -> {
+            return ok().body(Mono.just("Success"), String.class);
+        });
+    }
+
+
+    /*BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+                        if(passwordEncoder.matches(dbUser.getPassword(), user.getPassword())){
+                            return Mono.just(0);
+                        }.doOnNext(nu-> {
+                        if(nu != null) {
+                            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+                            if(passwordEncoder.matches(u.getPassword(), nu.getPassword())){
+                                return nu;
+                            }
+                            return Mono.just(0);
+                        }
+                    });
     @Bean
     public RouterFunction<?> all() {
 
@@ -61,7 +128,7 @@ class UserController {
         });  
     }
 
-     // insert into
+    // insert into
     @Bean
     public RouterFunction<?> insert() {
         return route(POST("/insertUser"), req -> {
@@ -100,8 +167,6 @@ class UserController {
         });
     }
     //update
-
-
     @Bean
     public RouterFunction<?> updateByIdAndPwd() {
         return route(POST("/updateByIdAndPwd"), req -> {
@@ -118,5 +183,5 @@ class UserController {
             }), User.class);
         });
     }
-
+ */
 }

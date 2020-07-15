@@ -2,11 +2,14 @@ package com.project.backend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
-import org.springframework.data.r2dbc.connectionfactory.init.ConnectionFactoryInitializer;
-import org.springframework.core.io.ClassPathResource;
-import io.r2dbc.spi.ConnectionFactory;
-import org.springframework.data.r2dbc.connectionfactory.init.ResourceDatabasePopulator;
+
+/*
+ConnectionFactory connectionFactory = ConnectionFactories.get("r2dbc:h2:mem:///test?options=DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE");
+
+DatabaseClient client = DatabaseClient.create(connectionFactory);
+
+*/
+
 @SpringBootApplication
 public class DemoApplication {
 

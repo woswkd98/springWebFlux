@@ -7,6 +7,8 @@ import org.springframework.web.reactive.config.WebFluxConfigurer;
 
 
 
+
+
 @Configuration
 @EnableWebFlux // cors쓰기위해서 
 public class WebFluxConfig implements WebFluxConfigurer{
@@ -15,6 +17,5 @@ public class WebFluxConfig implements WebFluxConfigurer{
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // 모두 땡겨와라 
                 .allowedMethods("*");
-            
     }
 }
