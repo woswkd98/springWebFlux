@@ -74,10 +74,16 @@ public class SecurityConfig {
 
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) throws Exception {
-       return http.cors().and().authorizeExchange().pathMatchers("/**").permitAll().and().build();
-    }  
+        http.authorizeExchange()
+        .anyExchange()
+        .permitAll();
+        http.csrf().disable();
+        return http.build();
 
- 
+
+    
+    }  
+    
     
 
 }

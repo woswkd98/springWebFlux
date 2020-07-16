@@ -12,7 +12,7 @@ import com.nimbusds.jwt.*;
 import com.nimbusds.oauth2.sdk.id.Subject;
 import com.nimbusds.jose.util.Base64;
 import java.util.Date;
-import com.project.backend.Configurations.*;
+
 import javax.annotation.PostConstruct;
 
 @Component
@@ -21,7 +21,7 @@ public class JwtProduct {
     private static byte[] sharedSecret;
 
     public static final String ISSUER = "jinheung";
-    public static final Long EXPIRATION_TIME = 30 * 60 * 1000L; // 1초에 1000 * 60초 * 30 즉 30분
+    public static final Long EXPIRATION_TIME = 30 * 60 * 1000L; //30 * 60 * 1000L; // 1초에 1000 * 60초 * 30 즉 30분
 
     
     private JWSSigner signer  = null;
@@ -35,14 +35,11 @@ public class JwtProduct {
             signer  = new MACSigner(sharedSecret);
             verifier = new MACVerifier(sharedSecret);
         } catch (KeyLengthException e) {
-            // TODO Auto-generated catch block
+         
             e.printStackTrace();
         }
 
     }
-
-
-
 
     public String getKey(String subject) {
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
@@ -73,16 +70,22 @@ public class JwtProduct {
         }
         
         if(!subject.equals(signedJWT.getJWTClaimsSet().getSubject())) {
+            System.out.println("subject");
+            System.out.println(signedJWT.getJWTClaimsSet().getSubject());
             return false;
         }
 
         if(!new Date().before(signedJWT.getJWTClaimsSet().getExpirationTime())) {
+            System.out.println("Date");
+            System.out.println(signedJWT.getJWTClaimsSet().getExpirationTime());
             return false;
         }
         if(!ISSUER.equals(signedJWT.getJWTClaimsSet().getIssuer())) {
+            System.out.println("getIssuer");
+            System.out.println(signedJWT.getJWTClaimsSet().getIssuer());
             return false;
         }
-        
+        System.out.println("success");
         return true;
         
     }

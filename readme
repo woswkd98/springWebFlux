@@ -23,7 +23,14 @@ https://connect2id.com/products/nimbus-jose-jwt/examples/jwt-with-rsa-signature
 원래는 WebFlux에서 저걸쓰면 에러난다 하지만 SecurityWebFilterChain 이걸 써서 해주면
 쓸 수 있다 (스프링 인 액션 403페이지)
 
+// 가끔 타겟 안에 class를 지웠던지 해서 꼬이는 경우가 있는데 메이븐 프로젝트 안에서 클린후 다시 인스톨하면 타겟 재생성
+
+//ServerHttpSecurity 요고 예제 찾으려다가 찾은거
+
+https://www.programcreek.com/java-api-examples/?api=org.springframework.security.config.web.server.ServerHttpSecurity
+
+
 // 
-
-
-
+react 부분에서 
+Access to XMLHttpRequest at 'http://localhost:1234/webApi/hello' from origin 'http://localhost:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+에러뜸 뭔진모르겠지만 일단 데이터 주고받는거와는 관련이없다 따라서 security에서 로그인 잘못설정한 것과 관련있는것으로 추정 (얘로 접근하면 로그인창 떴었음)

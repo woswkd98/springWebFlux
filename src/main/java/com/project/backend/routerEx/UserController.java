@@ -64,8 +64,14 @@ class UserController {
     }
 
     @Bean
+    public RouterFunction<?> test() {
+        return route(GET("/PP"), req -> ok().body(Mono.just(1), Integer.class));
+    }
+
+    @Bean
     public RouterFunction<?> join() {
         return route(POST("/join"), req -> {
+
             Mono<User> insertPub = req.bodyToMono(User.class);
             return ok().body(insertPub.flatMap(u -> {
                 BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -82,28 +88,19 @@ class UserController {
     @Bean
     public RouterFunction<?> login() {
         return route(POST("/login"), req -> {
-
             Mono<LoginModel> mUser = req.bodyToMono(LoginModel.class);
-            Mono<Integer> t = mUser.flatMap(u -> {
+            Mono<String> t = mUser.flatMap(u -> {
                 return databaseClient.execute("select * from User where id = :id").bind("id", u.getId()).as(User.class)
                         .fetch().first().flatMap(nu -> {
                             BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
                             if (!passwordEncoder.matches(u.getPassword(), nu.getPassword())) {
-                                return Mono.just(0);
+                                return Mono.just("failure");
                             }
 
-                            try {
-                                if (!jwtProduct.verify(nu.getId(), u.getToken())) {
-                                    return Mono.just(0);
-                                }
-                            } catch (ParseException | JOSEException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            }
-                            return Mono.just(1);
+                            return Mono.just(jwtProduct.getKey(u.getId()));
                         });
             });
-            return ok().body(t.subscribe(), Integer.class);
+            return ok().body(t, String.class);
         });
     }
 
@@ -114,6 +111,28 @@ class UserController {
         });
     }
 
+    @Bean
+    public RouterFunction<?> verify() {
+        return route(POST("/verify"), req -> {
+            Mono<LoginModel> mUser = req.bodyToMono(LoginModel.class);
+            Mono<String> rs = mUser.flatMap(u -> {
+                System.out.println(u.getId());
+                System.out.println(u.getPassword());
+                try {
+                    if (!jwtProduct.verify(u.getId(), u.getPassword())) {
+                        return Mono.just("failure");
+                    }
+                } catch (ParseException | JOSEException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
 
+                
+                return Mono.just("Success");
+
+            });
+            return ok().body(rs, String.class);
+        });
+    }
     
 }
