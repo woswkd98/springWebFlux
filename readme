@@ -1,4 +1,26 @@
 
-// zuul 설정 
-http://connorbach.me/2018/12/23/reverse-proxy-with-netflix-zuul/
-https://eblo.tistory.com/69
+// spring jwt 참고 
+https://idlecomputer.tistory.com/242 // jw*에 대한 전체적인 설명이 있다
+jwt는 oauth2부터 spring 안에 포함되 있으며 Nimbus JOSE+JWT 얘가 기본적으로 들어가 있다
+내용
+https://bitbucket.org/connect2id/nimbus-jose-jwt/wiki/Home
+
+
+//jwk
+https://www.letmecompile.com/api-auth-jwt-jwk-explained/
+
+대칭 비대칭 
+https://www.it-swarm-ko.tech/ko/jwt/rs256-%eb%8c%80-hs256-%ea%b7%b8-%ec%b0%a8%ec%9d%b4%ec%a0%90%ec%9d%80-%eb%ac%b4%ec%97%87%ec%9e%85%eb%8b%88%ea%b9%8c/826436771/
+
+//https://blog.outsider.ne.kr/1160 댓글이 읽어볼만함 
+
+hs가 대칭 rsa가 비 대칭 우리서비스는 hs rs256와 같은 보안은 필요없고 쓸거면 https를 쓰는게 빠르다
+
+2020 7/15 에러 WebSecurityConfigurerAdapter 여기서 에러나는데 
+원래는 WebFlux에서 저걸쓰면 에러난다 하지만 SecurityWebFilterChain 이걸 써서 해주면
+쓸 수 있다 (스프링 인 액션 403페이지)
+
+// 
+
+
+

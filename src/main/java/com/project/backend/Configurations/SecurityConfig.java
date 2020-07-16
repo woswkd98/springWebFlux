@@ -5,30 +5,38 @@ package com.project.backend.Configurations;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+
+import java.security.SecureRandom;
+
+import javax.annotation.PostConstruct;
+
 import org.springframework.context.annotation.Bean;
-
-
-
-
+import org.springframework.security.web.DefaultSecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.server.SecurityWebFilterChain;
 
 /*
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+   
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.cors()
-        .and()
+        http.cors();
+  
+        http.and()
         .httpBasic()
         .and()
         .authorizeRequests()
@@ -50,7 +58,38 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .and()
         .csrf()//restApi기준에서는 안쓰는게 맞다 
         .disable();
-    
+      
     }  
 
 }*/
+
+@EnableWebFluxSecurity
+@Configuration
+public class SecurityConfig {
+    private static byte[] sharedSecret;
+
+    @PostConstruct
+    public void init() {
+        sharedSecret = new byte[32];
+        SecureRandom rand = new SecureRandom();
+        rand.nextBytes(sharedSecret);
+    }
+
+    public static byte[] getSecretKey() {
+        return sharedSecret;
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+    
+
+    @Bean
+    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) throws Exception {
+       return http.cors().and().authorizeExchange().pathMatchers("/**").permitAll().and().build();
+    }  
+ 
+    
+
+}

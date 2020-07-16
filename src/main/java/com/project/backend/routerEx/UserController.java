@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
-import static org.springframework.web.reactive.function.server.RequestPredicates.GET; 
+import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
 import static org.springframework.web.reactive.function.server.RequestPredicates.POST; // static 붙이는 이유가 함수형을 import 시키기 위해
 import static org.springframework.web.reactive.function.server.ServerResponse.ok;
 import org.springframework.web.reactive.function.server.RouterFunction;
@@ -36,6 +36,16 @@ import java.util.Map;
 import com.project.backend.Model.*;
 import com.project.backend.Repository.UserRepository;
 import org.springframework.util.MultiValueMap;
+import java.text.ParseException;
+import com.nimbusds.jose.*;
+import com.nimbusds.jose.crypto.*;
+import com.nimbusds.jose.jwk.*;
+import com.nimbusds.jose.jwk.gen.*;
+import com.nimbusds.jwt.*;
+
+import com.nimbusds.jose.util.Base64;
+import java.util.Date;
+import com.project.backend.Configurations.*;
 @Configuration
 class UserController {
     
@@ -47,7 +57,7 @@ class UserController {
         this.databaseClient = databaseClient;
         this.userRepository = userRepository;
     }
-
+    /*
     @Bean
     public RouterFunction<?> join() {
         return route(POST("/join"), req -> {
@@ -84,18 +94,17 @@ class UserController {
                    }
                    return Mono.just(0);
                });  
-           });
-        
+            });        
             return ok().body(t.subscribe(), Integer.class);
         });
     }
-
+    
     @Bean 
     public  RouterFunction<?> logout() {
         return route(GET("/logout"), req -> {
             return ok().body(Mono.just("Success"), String.class);
         });
-    }
+    }*/
 
 
     /*BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -184,4 +193,33 @@ class UserController {
         });
     }
  */
+@Bean
+public RouterFunction<?> jwtTest() {
+
+    return route(GET("/jwtTest"), req -> {
+        /*
+        JWSSigner signer = new MACSigner(SecurityConfig.getSecretKey());
+
+        
+        JWSObject jwsObject = new JWSObject(
+            new JWSHeader(JWSAlgorithm.HS256), 
+            new Payload("id"));
+        
+        // Apply the HMAC
+        jwsObject.sign(signer);
+    
+        String s = jwsObject.serialize();
+   
+        jwsObject = JWSObject.parse(s);
+        
+        JWSVerifier verifier = new MACVerifier(SecurityConfig.getSecretKey());
+        
+        assertTrue(jwsObject.verify(verifier));
+        
+        assertEquals("Hello, world!", jwsObject.getPayload().toString());
+       */
+        return ok().body(Mono.just(0) , Integer.class);
+    });
+}
+    
 }
