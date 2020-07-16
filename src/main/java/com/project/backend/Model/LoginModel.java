@@ -4,6 +4,7 @@ package com.project.backend.Model;
 public class LoginModel {
     String id;
     String password;
+    String token;
 
     public String getId() {
         return id;
@@ -24,9 +25,20 @@ public class LoginModel {
     public LoginModel() {
     }
 
-    public LoginModel(String id, String password) {
+
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public LoginModel(String id, String password, String token) {
         this.id = id;
         this.password = password;
+        this.token = token;
     }
     
 }

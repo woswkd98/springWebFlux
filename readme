@@ -16,6 +16,9 @@ https://www.it-swarm-ko.tech/ko/jwt/rs256-%eb%8c%80-hs256-%ea%b7%b8-%ec%b0%a8%ec
 
 hs가 대칭 rsa가 비 대칭 우리서비스는 hs rs256와 같은 보안은 필요없고 쓸거면 https를 쓰는게 빠르다
 
+예제 코드
+https://connect2id.com/products/nimbus-jose-jwt/examples/jwt-with-rsa-signature
+
 2020 7/15 에러 WebSecurityConfigurerAdapter 여기서 에러나는데 
 원래는 WebFlux에서 저걸쓰면 에러난다 하지만 SecurityWebFilterChain 이걸 써서 해주면
 쓸 수 있다 (스프링 인 액션 403페이지)

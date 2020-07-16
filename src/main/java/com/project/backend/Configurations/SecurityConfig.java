@@ -1,5 +1,4 @@
 
-
 package com.project.backend.Configurations;
 
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -66,18 +65,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 @EnableWebFluxSecurity
 @Configuration
 public class SecurityConfig {
-    private static byte[] sharedSecret;
-
-    @PostConstruct
-    public void init() {
-        sharedSecret = new byte[32];
-        SecureRandom rand = new SecureRandom();
-        rand.nextBytes(sharedSecret);
-    }
-
-    public static byte[] getSecretKey() {
-        return sharedSecret;
-    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -89,6 +76,7 @@ public class SecurityConfig {
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) throws Exception {
        return http.cors().and().authorizeExchange().pathMatchers("/**").permitAll().and().build();
     }  
+
  
     
 
