@@ -43,8 +43,20 @@ create user 'pAdim' identified by '1234'
 걍귀찮으니 다 줌
  grant all privileges on *.* to 'pAdim'@'%' identified by '1234';
  desc User;
- // 쿼리문 증발 다음주 월요일 예정
-
-// 오늘 간단한 채팅 에정 
-// 링크 
+ 쿼리문 증발 다음주 월요일 예정
+ AWS에서 JAR파일 실행 확인함(MYSQL도 확인해봄)
+오늘 간단한 채팅 에정 
 https://www.baeldung.com/spring-5-reactive-websockets
+https://m.blog.naver.com/PostView.nhn?blogId=sehyunfa&logNo=221660349078&proxyReferer=https:%2F%2Fwww.google.com%2F
+https://www.joinc.co.kr/w/man/12/REDIS/chatting
+
+
+
+
+
+
+
+
+심심해서 본 도커 
+https://team-platform.tistory.com/45 
+우린 리액트랑 spring을 같이 쓸 것이다 따라서 이게 필수적이 된다 
