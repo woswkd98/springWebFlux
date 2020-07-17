@@ -34,3 +34,17 @@ https://www.programcreek.com/java-api-examples/?api=org.springframework.security
 react 부분에서 
 Access to XMLHttpRequest at 'http://localhost:1234/webApi/hello' from origin 'http://localhost:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
 에러뜸 뭔진모르겠지만 일단 데이터 주고받는거와는 관련이없다 따라서 security에서 로그인 잘못설정한 것과 관련있는것으로 추정 (얘로 접근하면 로그인창 떴었음)
+
+
+//7/17 오늘 할일 쿼리문 짜서 넘겨주기(명) aws실행 확인까지만 
+
+// jar file로 되는것 확인
+create user 'pAdim' identified by '1234'
+걍귀찮으니 다 줌
+ grant all privileges on *.* to 'pAdim'@'%' identified by '1234';
+ desc User;
+ // 쿼리문 증발 다음주 월요일 예정
+
+// 오늘 간단한 채팅 에정 
+// 링크 
+https://www.baeldung.com/spring-5-reactive-websockets

@@ -17,55 +17,42 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 import static org.springframework.web.reactive.function.server.ServerResponse.ok;
 import org.springframework.web.reactive.function.server.RouterFunction;
 
-import lombok.extern.java.Log;
-
-import org.reactivestreams.Subscriber;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.ConstructorBinding;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import static reactor.core.publisher.Mono.just;
+
 import org.springframework.data.r2dbc.core.DatabaseClient;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+
+
 import com.project.backend.Model.*;
-import com.project.backend.Repository.UserRepository;
+
 import com.project.backend.jwt.JwtProduct;
 
-import org.springframework.util.MultiValueMap;
+
 import java.text.ParseException;
 import com.nimbusds.jose.*;
-import com.nimbusds.jose.crypto.*;
-import com.nimbusds.jose.jwk.*;
-import com.nimbusds.jose.jwk.gen.*;
-import com.nimbusds.jwt.*;
-import com.nimbusds.oauth2.sdk.id.Subject;
-import com.nimbusds.jose.util.Base64;
-import java.util.Date;
-import com.project.backend.Configurations.*;
+
 
 @Configuration
 class UserController {
     @Autowired
     JwtProduct jwtProduct;
 
-    private final UserRepository userRepository;
 
     private final DatabaseClient databaseClient;
 
-    public UserController(DatabaseClient databaseClient, UserRepository userRepository) {
+    public UserController(DatabaseClient databaseClient) {
         this.databaseClient = databaseClient;
-        this.userRepository = userRepository;
+       
     }
 
     @Bean
     public RouterFunction<?> test() {
-        return route(GET("/PP"), req -> ok().body(Mono.just(1), Integer.class));
+        return route(GET("/PP"), req -> ok().body(
+            databaseClient.execute("select * from User").as(User.class).fetch().all(), User.class));
     }
 
     @Bean
@@ -104,12 +91,6 @@ class UserController {
         });
     }
 
-    @Bean
-    public RouterFunction<?> logout() {
-        return route(GET("/logout"), req -> {
-            return ok().body(Mono.just("Success"), String.class);
-        });
-    }
 
     @Bean
     public RouterFunction<?> verify() {
