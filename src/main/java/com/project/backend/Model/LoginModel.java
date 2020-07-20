@@ -24,10 +24,7 @@ public class LoginModel {
 
     public LoginModel() {
     }
-
-
-
-
+    
     public LoginModel(String id, String password) {
         this.id = id;
         this.password = password;

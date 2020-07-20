@@ -11,48 +11,48 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
 import static org.springframework.web.reactive.function.server.RequestPredicates.POST; // static 붙이는 이유가 함수형을 import 시키기 위해
 import static org.springframework.web.reactive.function.server.ServerResponse.ok;
 import org.springframework.web.reactive.function.server.RouterFunction;
-
+import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import org.springframework.data.r2dbc.core.DatabaseClient;
+import org.springframework.http.HttpCookie;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
-
 
 import com.project.backend.Model.*;
 
 import com.project.backend.jwt.JwtProduct;
 
-
 import java.text.ParseException;
-import com.nimbusds.jose.*;
+import java.util.List;
 
+import com.nimbusds.jose.*;
 
 @Configuration
 class UserController {
     @Autowired
     JwtProduct jwtProduct;
 
-
     private final DatabaseClient databaseClient;
 
     public UserController(DatabaseClient databaseClient) {
         this.databaseClient = databaseClient;
-       
+
     }
 
     @Bean
     public RouterFunction<?> test() {
-        return route(GET("/PP"), req -> ok().body(
-            databaseClient.execute("select * from User").as(User.class).fetch().all(), User.class));
+        return route(GET("/PP"), req -> ok()
+                .body(databaseClient.execute("select * from User").as(User.class).fetch().all(), User.class));
     }
 
     @Bean
@@ -76,22 +76,42 @@ class UserController {
     public RouterFunction<?> login() {
         return route(POST("/login"), req -> {
             Mono<LoginModel> mUser = req.bodyToMono(LoginModel.class);
+            Mono<ServerResponse> res;
+            
             Mono<String> t = mUser.flatMap(u -> {
                 return databaseClient.execute("select * from User where id = :id").bind("id", u.getId()).as(User.class)
                         .fetch().first().flatMap(nu -> {
+                   
+                            
                             BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
                             if (!passwordEncoder.matches(u.getPassword(), nu.getPassword())) {
-                                return Mono.just("failure");
+                                return Mono.just("");
+                                
                             }
-
+                           
                             return Mono.just(jwtProduct.getKey(u.getId()));
-                        });
+                        });         
             });
-            return ok().body(t, String.class);
+       
+            return ok().cookie(
+                ResponseCookie.from("token", t.block())
+                .maxAge(JwtProduct.EXPIRATION_TIME)
+                .httpOnly(true) // 보안 취약점을 막기위해
+                .build()).body(Mono.just("asdf") ,String.class);
         });
     }
 
-
+    @Bean
+    public RouterFunction<?> logout() {
+        return route(POST("/test2"), req -> {
+            // 쿠키는 강제로 삭제는 못시킨다 하지만 만료를 시킬수 있다 
+          return ok().cookie(
+                ResponseCookie.from("token","") // 일단 
+                .maxAge(0) // 시간 0
+                .httpOnly(true) 
+                .build()).body(Mono.just("asdf") ,String.class);
+        });
+    }
     @Bean
     public RouterFunction<?> verify() {
         return route(POST("/verify"), req -> {
@@ -104,13 +124,10 @@ class UserController {
                         return Mono.just("failure");
                     }
                 } catch (ParseException | JOSEException e) {
-                    // TODO Auto-generated catch block
+                   
                     e.printStackTrace();
                 }
-
-                
                 return Mono.just("Success");
-
             });
             return ok().body(rs, String.class);
         });

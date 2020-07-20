@@ -1,4 +1,4 @@
-package com.project.backend.Repository;
+package com.project.backend.repositories;
 
 
 import org.springframework.data.r2dbc.repository.Query;
