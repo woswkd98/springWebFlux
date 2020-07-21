@@ -45,7 +45,7 @@ create user 'pAdim' identified by '1234'
  desc User;
  쿼리문 증발 다음주 월요일 예정
  AWS에서 JAR파일 실행 확인함(MYSQL도 확인해봄)
-오늘 간단한 채팅 에정 
+오늘 간단한 채팅 에정 (7/21취소)
 https://www.baeldung.com/spring-5-reactive-websockets
 https://m.blog.naver.com/PostView.nhn?blogId=sehyunfa&logNo=221660349078&proxyReferer=https:%2F%2Fwww.google.com%2F
 https://www.joinc.co.kr/w/man/12/REDIS/chatting
@@ -66,9 +66,28 @@ https://www.it-swarm-ko.tech/ko/sql/sql-%eb%8d%b0%ec%9d%b4%ed%84%b0%eb%b2%a0%ec%
 https://d2.naver.com/helloworld/1155
 
 
+queryDSL JPA 둘다 쓴다 내가 봤을 때 DatabaseClient는 QueryDSL쪽에 가깝다 
+https://ict-nroo.tistory.com/117
 
-심심해서 본 도커 
-https://team-platform.tistory.com/45 
+r2dbc에서는 JPA 몇몇 지원하지 않는게 있다 그렇다 보니 적당적당하게 한다
+https://luvstudy.tistory.com/94 // 
 
 우린 리액트랑 spring을 같이 쓸 것이다 따라서 이게 필수적이 된다 
 
+java timezone 형식
+https://mainia.tistory.com/2246
+
+
+
+https://javacan.tistory.com/entry/R2DBC-03-Spring-Data-R2DBC-DatabaseClient
+
+//트랜잭셔널 부분
+https://spring.io/blog/2019/05/16/reactive-transactions-with-spring
+
+REST api
+https://bcho.tistory.com/954
+
+
+
+심심해서 본 도커 
+https://team-platform.tistory.com/45 

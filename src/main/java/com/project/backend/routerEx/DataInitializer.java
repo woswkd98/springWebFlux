@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Autowired;
 import static org.springframework.data.domain.Sort.Order.desc;
 
+import javax.annotation.PostConstruct;
+
 /**
  * @author jinheung
  */
@@ -24,5 +26,6 @@ class DataInitializer {
         this.databaseClient = databaseClient;
     }
     
+
 
 }

@@ -34,7 +34,7 @@ import com.project.backend.jwt.JwtProduct;
 
 import java.text.ParseException;
 import java.util.List;
-
+import java.util.HashMap;
 import com.nimbusds.jose.*;
 
 @Configuration
@@ -49,24 +49,23 @@ class UserController {
 
     }
 
-    @Bean
-    public RouterFunction<?> test() {
-        return route(GET("/PP"), req -> ok()
-                .body(databaseClient.execute("select * from User").as(User.class).fetch().all(), User.class));
-    }
+    // 
 
     @Bean
     public RouterFunction<?> join() {
-        return route(POST("/join"), req -> {
+        return route(POST("/user/join"), req -> {
 
             Mono<User> insertPub = req.bodyToMono(User.class);
             return ok().body(insertPub.flatMap(u -> {
                 BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-                u.setPassword(passwordEncoder.encode(u.getPassword()));
+                u.setUserPassword(passwordEncoder.encode(u.getUserPassword()));
                 Mono<Integer> rs = databaseClient
-                        .execute("insert into User(id, password, name, email) values( :id, :password, :name, :email)")
-                        .as(User.class).bind("id", u.getId()).bind("password", u.getPassword())
-                        .bind("name", u.getName()).bind("email", u.getEmail()).fetch().rowsUpdated().onErrorReturn(0); // 해결봤다
+                        .execute("insert into User(userId, userPassword, userName, userEmail) values( :id, :password, :name, :email)")
+                        .as(User.class)
+                        .bind("id", u.getUserId())
+                        .bind("password", u.getUserPassword())
+                        .bind("name", u.getUserName())
+                        .bind("email", u.getUserEmail()).fetch().rowsUpdated().onErrorReturn(0); // 해결봤다
                 return rs;
             }), Integer.class);
         });
@@ -74,21 +73,16 @@ class UserController {
 
     @Bean
     public RouterFunction<?> login() {
-        return route(POST("/login"), req -> {
+        return route(POST("/user/login"), req -> {
             Mono<LoginModel> mUser = req.bodyToMono(LoginModel.class);
-            Mono<ServerResponse> res;
             
             Mono<String> t = mUser.flatMap(u -> {
                 return databaseClient.execute("select * from User where id = :id").bind("id", u.getId()).as(User.class)
                         .fetch().first().flatMap(nu -> {
-                   
-                            
                             BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-                            if (!passwordEncoder.matches(u.getPassword(), nu.getPassword())) {
+                            if (!passwordEncoder.matches(u.getPassword(), nu.getUserPassword())) {
                                 return Mono.just("");
-                                
                             }
-                           
                             return Mono.just(jwtProduct.getKey(u.getId()));
                         });         
             });
@@ -103,7 +97,7 @@ class UserController {
 
     @Bean
     public RouterFunction<?> logout() {
-        return route(POST("/test2"), req -> {
+        return route(POST("/user/logout"), req -> {
             // 쿠키는 강제로 삭제는 못시킨다 하지만 만료를 시킬수 있다 
           return ok().cookie(
                 ResponseCookie.from("token","") // 일단 
@@ -114,7 +108,7 @@ class UserController {
     }
     @Bean
     public RouterFunction<?> verify() {
-        return route(POST("/verify"), req -> {
+        return route(POST("/user/verify"), req -> {
             Mono<LoginModel> mUser = req.bodyToMono(LoginModel.class);
             Mono<String> rs = mUser.flatMap(u -> {
                 System.out.println(u.getId());
@@ -124,7 +118,6 @@ class UserController {
                         return Mono.just("failure");
                     }
                 } catch (ParseException | JOSEException e) {
-                   
                     e.printStackTrace();
                 }
                 return Mono.just("Success");
@@ -132,5 +125,38 @@ class UserController {
             return ok().body(rs, String.class);
         });
     }
+    @Bean 
+    public RouterFunction<?> update() {
+        return route(POST("/user/update"), req -> {
+            Mono<HashMap<String, Object>> userRequest = req.bodyToMono(HashMap.class);
+            HashMap<String, Object> user = userRequest.block();
+            return ok().body(
+                databaseClient
+                .execute(
+                    "update user set userPassword = : pwd" + 
+                    "userEmail = : email")
+                    .bind("pwd", user.get("userPassword"))
+                    .bind("email", user.get("email"))
+                    .fetch().rowsUpdated()
+                    .onErrorReturn(0), Integer.class);
+        });
+    }
     
+    @Bean
+    public RouterFunction<?> delete() {
+        return route(POST("/user/delete"), req -> {
+            Mono<HashMap<String, Object>> userRequest = req.bodyToMono(HashMap.class);
+            HashMap<String, Object> user = userRequest.block();
+            return ok().body(
+                databaseClient
+                .execute(
+                    "update user set userPassword = : pwd" + 
+                    "userEmail = : email")
+                    .bind("pwd", user.get("userPassword"))
+                    .bind("email", user.get("email"))
+                    .fetch().rowsUpdated()
+                    .onErrorReturn(0), Integer.class);
+        });
+    }
+
 }

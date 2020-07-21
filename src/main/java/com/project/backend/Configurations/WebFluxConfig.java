@@ -13,7 +13,6 @@ public class WebFluxConfig implements WebFluxConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // 모두 땡겨와라
                 .allowedMethods("*");
-         
     }
 }
 
