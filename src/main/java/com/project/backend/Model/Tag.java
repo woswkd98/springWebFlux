@@ -20,4 +20,36 @@ public class Tag {
 
     public Tag() {
     }
+
+    public int getTagId() {
+        return tagId;
+    }
+
+    public void setTagId(int tagId) {
+        this.tagId = tagId;
+    }
+
+    public String getConText() {
+        return conText;
+    }
+
+    public void setConText(String conText) {
+        this.conText = conText;
+    }
+
+    public int getBidCount() {
+        return bidCount;
+    }
+
+    public void setBidCount(int bidCount) {
+        this.bidCount = bidCount;
+    }
+
+    public int getClickCount() {
+        return clickCount;
+    }
+
+    public void setClickCount(int clickCount) {
+        this.clickCount = clickCount;
+    }
 }

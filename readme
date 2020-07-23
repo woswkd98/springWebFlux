@@ -88,6 +88,15 @@ REST api
 https://bcho.tistory.com/954
 
 
+// 2020 07 23
+vscode 
+1.8버전 못쓴다 
+11버전부터 망할 
+
+// request has tag와 관련된 내용
+https://www.it-swarm-ko.tech/ko/mysql/mysql%ec%97%90-%eb%b0%b0%ec%97%b4%ec%9d%84-%ec%a0%80%ec%9e%a5%ed%95%98%eb%8a%94-%eb%b0%a9%eb%b2%95/1073008887/
+// 와 진짜 함수형 모델이고 뭐고 일단 DatabaseClient형식 개빡셈 뭐 지원 안하나 
+우리 reactiveRepository 형식은 어떨까?
 
 심심해서 본 도커 
 https://team-platform.tistory.com/45 

@@ -4,7 +4,7 @@ import org.springframework.data.relational.core.mapping.Table;
 
 @Table("Request")
 public class Request {
-    private int id;
+    private int requestId;
     private String author;
     private String detail;
     private String category;
@@ -13,12 +13,12 @@ public class Request {
     private String hopeDate;
 
 
-    public int getId() {
-        return id;
+    public int getRequestId() {
+        return requestId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setRequestId(int id) {
+        this.requestId = id;
     }
 
     public String getAuthor() {
@@ -70,9 +70,9 @@ public class Request {
     }
 
 
-    public Request(int id, String author, String detail, String category, String uploadAt, int deadline,
+    public Request(int requestId, String author, String detail, String category, String uploadAt, int deadline,
             String hopeDate) {
-        this.id = id;
+        this.requestId = requestId;
         this.author = author;
         this.detail = detail;
         this.category = category;
@@ -85,3 +85,5 @@ public class Request {
     public Request() {
     }
 }
+
+

@@ -12,19 +12,13 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import static org.springframework.web.reactive.function.server.RouterFunctions.route;
-import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
-import static org.springframework.web.reactive.function.server.RequestPredicates.POST; // static 붙이는 이유가 함수형을 import 시키기 위해
-import static org.springframework.web.reactive.function.server.RequestPredicates.PUT;
-import static org.springframework.web.reactive.function.server.RequestPredicates.DELETE;
-import static org.springframework.web.reactive.function.server.RequestPredicates.PATCH;
+
 import static org.springframework.web.reactive.function.server.ServerResponse.ok;
-import org.springframework.web.reactive.function.server.RouterFunction;
+
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import org.springframework.context.annotation.Bean;
+import net.minidev.json.JSONObject;
 
 import org.springframework.data.r2dbc.core.DatabaseClient;
 import org.springframework.http.HttpCookie;
@@ -55,30 +49,38 @@ public class RequestHandler {
     public RequestHandler(DatabaseClient databaseClient) {
         this.databaseClient = databaseClient;
     }
-
+    
+    
+    @Transactional
     public Mono<ServerResponse> insert(ServerRequest req) {
-        Mono<HashMap<String, Object>> productRequest = req.bodyToMono(HashMap.class);
-        HashMap<String, Object> mRequest = productRequest.block();
 
-        Mono<Integer> rs = databaseClient
+        Mono<RequestGetter> mbody = req.bodyToMono(RequestGetter.class);
+      
+        RequestGetter body = mbody.block();
+        
+        int rs = databaseClient
         .execute(
             "insert into Request(author, detail , category, uploadAt ) values( :author, :detail, :category, :uploadAt)")
         .as(Request.class)
-        .bind("author",  mRequest.get("author"))
-        .bind("detail", mRequest.get("detail"))
-        .bind("category",  mRequest.get("category"))
-        .bind("deadLine", mRequest.get("deadLine"))
+        .bind("author", body.getAuthor())
+        .bind("detail", body.getDetail())
+        .bind("category",  body.getCategory())
+        .bind("deadLine", body.getDeadline())
         .bind("uploadAt ", GetTimeZone.getSeoulDate())
-        .fetch()
-        .rowsUpdated()
-        .onErrorReturn(0);
+        .fetch().first().block().getRequestId();
+        /*            databaseClient.execute(
+                "insert into RequestHasTag(request_requestId =:request) values(:context)")
+            
+       (     
+        */
+    
 
         return ok().body(rs, Integer.class);
     }
 
     @Transactional //요 부분에서 요청을 삭제하면 그 요청에 대한 입찰도 같이 삭제해야함 따라서 두개의 쿼리문을 하나로
     public Mono<ServerResponse> delete(ServerRequest req) {
- 
+        
         Mono<HashMap<String, Object>> productRequest = req.bodyToMono(HashMap.class);
         HashMap<String, Object> mRequest = productRequest.block();
 
@@ -96,11 +98,26 @@ public class RequestHandler {
             .rowsUpdated().onErrorReturn(0))
         .onErrorReturn(0);;
     
-        return ok().body(rs, Integer.class).;
+        return ok().body(rs, Integer.class);
     }
 
-    public Mono<ServerResponse> selectByTag() {
+    public Mono<ServerResponse> selectByCategory(ServerRequest req) {
         Flux<Request> rs = 
-        return ok.body(rs, Request.class);
+            databaseClient.execute("select * from request where category = :category")
+            .bind("category", req.bodyToMono(Map.class).block().get("category"))
+            .as(Request.class)
+            .fetch()
+            .all();
+        return ok().body(rs, Request.class);
     }
+
+    public Mono<ServerResponse> selectAll(ServerRequest req) {
+        Flux<Request> rs =
+            databaseClient.execute("select * from reqeust")
+            .as(Request.class)
+            .fetch()
+            .all();
+        return ok().body(rs, Request.class);
+    }
+
 }

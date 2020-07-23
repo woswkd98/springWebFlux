@@ -1,0 +1,42 @@
+package com.project.backend.handlers;
+
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import static org.springframework.web.reactive.function.server.ServerResponse.ok;
+
+import org.springframework.web.reactive.function.server.ServerRequest;
+import org.springframework.web.reactive.function.server.ServerResponse;
+
+import org.springframework.data.r2dbc.core.DatabaseClient;
+
+import org.springframework.stereotype.Component;
+
+import org.springframework.transaction.annotation.Transactional;
+
+import com.project.backend.Configurations.GetTimeZone;
+import com.project.backend.Model.*;
+
+import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.core.*;
+
+
+
+
+
+@Component
+public class TagHandler {
+
+    private final DatabaseClient databaseClient;
+    
+    public TagHandler(DatabaseClient databaseClient) {
+        this.databaseClient = databaseClient;
+    }
+
+    
+}
