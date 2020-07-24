@@ -1,6 +1,7 @@
 package com.project.backend.routerEx;
 
 import org.springframework.context.annotation.Configuration;
+import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
 import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
 import static org.springframework.web.reactive.function.server.RequestPredicates.PUT;
 import static org.springframework.web.reactive.function.server.RequestPredicates.DELETE;
@@ -16,9 +17,11 @@ public class RequestController {
     @Autowired
     RequestHandler requestHandler;
 
+
+    //checked
     @Bean
     public RouterFunction<?> requestInsert() {
-        return RouterFunctions.route(PUT("/user"), requestHandler::insert);
+        return RouterFunctions.route(POST("/null"), requestHandler::insert);
     }
 
     @Bean 
@@ -26,15 +29,22 @@ public class RequestController {
         return RouterFunctions.route(DELETE("/delete"), requestHandler::delete);
     }
     
+    //checked
     @Bean 
-    public RouterFunction<?> requestSelectByCategory() {
-        return RouterFunctions.route(GET("/selectByCategory"), requestHandler::selectByCategory);
+    public RouterFunction<?> selectRequestByCategory() {
+        return RouterFunctions.route(POST("/null"), requestHandler::selectByCategory);
     }
     
+    //checked
     @Bean 
     public RouterFunction<?> selectAll() {
-        return RouterFunctions.route(GET("selectAll"),requestHandler::selectAll);
+        return RouterFunctions.route(GET("/ttt"),requestHandler::selectAll);
     }
+    
 
-
+    @Bean 
+    public RouterFunction<?> selectRequestsByTagContext() {
+        return RouterFunctions.route(POST("/asd"),requestHandler::selectRequestsByTagContext);
+    }
+    
 }

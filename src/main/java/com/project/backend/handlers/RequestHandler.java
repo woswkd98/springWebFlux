@@ -35,6 +35,7 @@ import com.project.backend.Configurations.GetTimeZone;
 import com.project.backend.Model.*;
 
 import com.project.backend.jwt.JwtProduct;
+import com.project.backend.repositories.RequestRepository;
 
 import java.text.ParseException;
 import java.util.List;
@@ -45,37 +46,33 @@ import java.util.Iterator;
 // 이제 controller 안에 덕지덕지 붙이는게 싫으니 따로 만들자
 @Component
 public class RequestHandler {
+    
     private final DatabaseClient databaseClient;
-    public RequestHandler(DatabaseClient databaseClient) {
+    private final RequestRepository requestRepository;
+    public RequestHandler(DatabaseClient databaseClient
+    ,RequestRepository requestRepository
+    ) {
         this.databaseClient = databaseClient;
+        this.requestRepository = requestRepository;
     }
     
     
-    @Transactional
+    
     public Mono<ServerResponse> insert(ServerRequest req) {
 
         Mono<RequestGetter> mbody = req.bodyToMono(RequestGetter.class);
       
         RequestGetter body = mbody.block();
-        
-        int rs = databaseClient
-        .execute(
-            "insert into Request(author, detail , category, uploadAt ) values( :author, :detail, :category, :uploadAt)")
-        .as(Request.class)
-        .bind("author", body.getAuthor())
-        .bind("detail", body.getDetail())
-        .bind("category",  body.getCategory())
-        .bind("deadLine", body.getDeadline())
-        .bind("uploadAt ", GetTimeZone.getSeoulDate())
-        .fetch().first().block().getRequestId();
-        /*            databaseClient.execute(
-                "insert into RequestHasTag(request_requestId =:request) values(:context)")
-            
-       (     
-        */
-    
 
-        return ok().body(rs, Integer.class);
+        return ok().body(
+            requestRepository.requestInsert( 
+                body.getCategory(),
+                body.getContext(),
+                GetTimeZone.getSeoulDate(),
+                body.getDeadline(),
+                body.getHopeDate(),
+                body.getUserId()
+                ), Integer.class);
     }
 
     @Transactional //요 부분에서 요청을 삭제하면 그 요청에 대한 입찰도 같이 삭제해야함 따라서 두개의 쿼리문을 하나로
@@ -113,11 +110,20 @@ public class RequestHandler {
 
     public Mono<ServerResponse> selectAll(ServerRequest req) {
         Flux<Request> rs =
-            databaseClient.execute("select * from reqeust")
+            databaseClient.execute("select * from request")
             .as(Request.class)
             .fetch()
             .all();
         return ok().body(rs, Request.class);
+    }
+
+    public Mono<ServerResponse> selectRequestsByTagContext(ServerRequest req) {
+ 
+        Flux<Request> temp = requestRepository
+        .selectRequestsByTagContext(req.bodyToMono(String.class).block());
+  
+        return ok().body(
+            temp,Request.class);
     }
 
 }

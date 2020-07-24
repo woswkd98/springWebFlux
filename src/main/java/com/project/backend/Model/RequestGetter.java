@@ -10,12 +10,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RequestGetter { // 리퀘스트 저장받을 떄 형식
-    private String id;
-    private String author;
-    private String detail;
+    private int userId;
+    private String context;
     private String category;
-    private String uploadAt;
-    private int deadline;
+    private String deadline;
     private String hopeDate;
     private String tags[];
 }

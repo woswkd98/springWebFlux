@@ -95,8 +95,18 @@ vscode
 
 // request has tag와 관련된 내용
 https://www.it-swarm-ko.tech/ko/mysql/mysql%ec%97%90-%eb%b0%b0%ec%97%b4%ec%9d%84-%ec%a0%80%ec%9e%a5%ed%95%98%eb%8a%94-%eb%b0%a9%eb%b2%95/1073008887/
+컬렉션같은거 쓸 줄 알았는데 그런것보단 사이에 하나 테이블을 더 만들더라 그리고 조인써서 찾음
 // 와 진짜 함수형 모델이고 뭐고 일단 DatabaseClient형식 개빡셈 뭐 지원 안하나 
 우리 reactiveRepository 형식은 어떨까?
+일단 로그인 다음부터는 crudRepository로 쓴다 
+jpa 자체는 못쓴다 ㅠㅠ
+
+//문자열의 유사도 체크 
+https://technet.tmaxsoft.com/upload/download/online/tibero/pver-20160406-000002/tibero_pkg/chap_utl_match.html
+
+
+7/24
+오늘 못찾은 에러 request id = 0랑 date널값나오는거 일단 앞단문제없고 flatmap에서 확인했을 때 null뜸 requestid에서 뭔가 biding이랑 연결이 안되서 0뜨는것 같고 date는 개짜증이네 왜 안불러와지냐 진짜
 
 심심해서 본 도커 
 https://team-platform.tistory.com/45 

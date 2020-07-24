@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.project.backend.Configurations.GetTimeZone;
 import com.project.backend.Model.*;
+import com.project.backend.repositories.TagRepository;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -31,12 +32,17 @@ import lombok.core.*;
 
 @Component
 public class TagHandler {
-
+    private final TagRepository tagRepository;
     private final DatabaseClient databaseClient;
     
-    public TagHandler(DatabaseClient databaseClient) {
+    public TagHandler(DatabaseClient databaseClient,
+    TagRepository tagRepository) {
         this.databaseClient = databaseClient;
+        this.tagRepository = tagRepository;
     }
+    /*
+    public Flux<Request>  getRequestsByTagContext(ServerRequest req) {
+      
 
-    
+    }*/
 }

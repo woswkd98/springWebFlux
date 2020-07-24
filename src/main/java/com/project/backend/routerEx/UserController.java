@@ -28,6 +28,7 @@ import org.springframework.http.HttpCookie;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import com.project.backend.Configurations.GetTimeZone;
 import com.project.backend.Model.*;
 
 import com.project.backend.jwt.JwtProduct;
@@ -73,12 +74,13 @@ class UserController {
 
     @Bean
     public RouterFunction<?> login() {
-        return route(POST("/user/login"), req -> {
+        return route(POST("/login"), req -> {
             Mono<LoginModel> mUser = req.bodyToMono(LoginModel.class);
             
             Mono<String> t = mUser.flatMap(u -> {
                 return databaseClient.execute("select * from User where id = :id").bind("id", u.getId()).as(User.class)
                         .fetch().first().flatMap(nu -> {
+                            System.out.print(nu.getUserPassword());
                             BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
                             if (!passwordEncoder.matches(u.getPassword(), nu.getUserPassword())) {
                                 return Mono.just("");
@@ -157,6 +159,21 @@ class UserController {
                     .fetch().rowsUpdated()
                     .onErrorReturn(0), Integer.class);
         });
+    }
+    @Bean 
+    public RouterFunction<?> test() {
+        return route(GET("/tt"),
+
+
+         req -> ok().body( databaseClient
+                .execute(
+                    "insert into testtable(asdf, date, datet)" +
+                    "values(12345, :date,:datet)")
+                    .bind("date", GetTimeZone.getSeoulDate()) 
+                    .bind("datet", GetTimeZone.getSeoulDate())
+                    .fetch().rowsUpdated()
+                    .onErrorReturn(0), Integer.class));
+
     }
 
 }
