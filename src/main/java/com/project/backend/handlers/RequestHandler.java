@@ -1,47 +1,29 @@
 package com.project.backend.handlers;
 
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
 
 import static org.springframework.web.reactive.function.server.ServerResponse.ok;
 
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
-import net.minidev.json.JSONObject;
-
 import org.springframework.data.r2dbc.core.DatabaseClient;
-import org.springframework.http.HttpCookie;
-import org.springframework.http.ResponseCookie;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.ReactiveTransaction;
-import org.springframework.transaction.ReactiveTransactionManager;
+
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.reactive.TransactionalOperator;
-import org.springframework.util.MultiValueMap;
+
 
 import com.project.backend.Configurations.GetTimeZone;
 import com.project.backend.Model.*;
 
-import com.project.backend.jwt.JwtProduct;
 import com.project.backend.repositories.RequestRepository;
 
-import java.text.ParseException;
-import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.List;
+
 
 // 이제 controller 안에 덕지덕지 붙이는게 싫으니 따로 만들자
 @Component
@@ -61,26 +43,32 @@ public class RequestHandler {
     public Mono<ServerResponse> insert(ServerRequest req) {
 
         Mono<RequestGetter> mbody = req.bodyToMono(RequestGetter.class);
-      
-        RequestGetter body = mbody.block();
-
-        return ok().body(
-            requestRepository.requestInsert( 
-                body.getCategory(),
-                body.getContext(),
+        Mono<Integer> request = mbody.flatMap(mBody-> {
+            return Mono.just( requestRepository.requestInsert( 
+                mBody.getCategory(),
+                mBody.getContext(),
                 GetTimeZone.getSeoulDate(),
-                body.getDeadline(),
-                body.getHopeDate(),
-                body.getUserId()
-                ), Integer.class);
+                mBody.getDeadline(),
+                mBody.getHopeDate(),
+                mBody.getUserId()
+            ).block().getRequestId());
+ 
+
+        });
+        System.out.println(request.block());
+        return ok().body(
+            request, Request.class);
+
+        
+        
     }
 
     @Transactional //요 부분에서 요청을 삭제하면 그 요청에 대한 입찰도 같이 삭제해야함 따라서 두개의 쿼리문을 하나로
     public Mono<ServerResponse> delete(ServerRequest req) {
         
-        Mono<HashMap<String, Object>> productRequest = req.bodyToMono(HashMap.class);
+        Mono<HashMap> productRequest = req.bodyToMono(HashMap.class);
         HashMap<String, Object> mRequest = productRequest.block();
-
+        System.out.print(mRequest.get("requestId"));
         Mono<Integer> rs = databaseClient
         .execute(
             "delete from bidding where request_requestId = :requestId")
@@ -108,12 +96,37 @@ public class RequestHandler {
         return ok().body(rs, Request.class);
     }
 
+
+    /*
+    this.requestId = requestId;
+        this.context = context;
+        this.category = category;
+        this.uploadAt = uploadAt;
+        this.deadLine = deadLine;
+        this.hopeDate = hopeDate;
+        this.user_indexId = user_indexId;
+    */
+
     public Mono<ServerResponse> selectAll(ServerRequest req) {
         Flux<Request> rs =
-            databaseClient.execute("select * from request")
-            .as(Request.class)
+            databaseClient.execute("select r.* from request r order by r.deadLine desc")
             .fetch()
-            .all();
+            .all()
+            .flatMap(map -> {
+                return Flux.just(
+                 new Request(
+                    (int)map.get("requestId"),
+                     map.get("category").toString(),
+                     map.get("context").toString(),
+                     map.get("uploadAt").toString(),
+                     map.get("deadLine").toString(),
+                     map.get("hopeDate").toString(),
+                     (int)map.get("user_indexId")
+                ));
+
+
+            });
+
         return ok().body(rs, Request.class);
     }
 

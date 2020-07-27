@@ -12,9 +12,9 @@ public interface RequestRepository extends ReactiveCrudRepository<Request, Long>
     
     @Query(
         "insert into Request(category, context , uploadAt, deadLine, hopeDate, user_indexId )" +
-        "values( :category, :context , :uploadAt, :deadLine, :hopeDate, :user_indexId)"
+        "values ( :category, :context , :uploadAt, :deadLine, :hopeDate, :user_indexId)"
         )
-    public Mono<Integer> requestInsert(
+    public Mono<Request> requestInsert(
         String category, 
         String context, 
         String uploadAt,

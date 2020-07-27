@@ -1,4 +1,3 @@
-
 package com.project.backend.routerEx;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,6 +34,7 @@ import com.project.backend.jwt.JwtProduct;
 
 import java.text.ParseException;
 import java.util.List;
+import java.util.Map;
 import java.util.HashMap;
 import com.nimbusds.jose.*;
 
@@ -58,42 +58,52 @@ class UserController {
 
             Mono<User> insertPub = req.bodyToMono(User.class);
             return ok().body(insertPub.flatMap(u -> {
+
+                System.out.println(u.getUserId());
+                System.out.println(u.getUserPassword());
+
                 BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
                 u.setUserPassword(passwordEncoder.encode(u.getUserPassword()));
-                Mono<Integer> rs = databaseClient
-                        .execute("insert into User(userId, userPassword, userName, userEmail) values( :id, :password, :name, :email)")
+                Mono<User> rs = databaseClient
+                        .execute("INSERT INTO USER(userId, userPassword, userName, userEmail) VALUES (:userId,:userPassword,:userName,:userEmail)")
                         .as(User.class)
-                        .bind("id", u.getUserId())
-                        .bind("password", u.getUserPassword())
-                        .bind("name", u.getUserName())
-                        .bind("email", u.getUserEmail()).fetch().rowsUpdated().onErrorReturn(0); // 해결봤다
+                        .bind("userId", u.getUserId())
+                        .bind("userPassword", u.getUserPassword())
+                        .bind("userName", u.getUserName())
+                        .bind("userEmail", u.getUserEmail()).fetch().first(); // 해결봤다
                 return rs;
-            }), Integer.class);
+            }), User.class);
         });
     }
 
     @Bean
     public RouterFunction<?> login() {
-        return route(POST("/login"), req -> {
-            Mono<LoginModel> mUser = req.bodyToMono(LoginModel.class);
+        return route(POST("/user/login"), req -> {
+            Mono<LoginModel> mLogin= req.bodyToMono(LoginModel.class);
+            LoginModel lm = mLogin.block();
+            Mono<User> mUser = databaseClient.execute("select * from user where userId = :id")
+            .as(User.class)
+            .bind("id", lm.getId())
+
+            .fetch().first().flatMap(nu -> {
+                     
+                BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+                if (!passwordEncoder.matches(lm.getPassword(), nu.getUserPassword())) {
+                    return Mono.just(nu);
+                }
+                return null;
+            });         
+
+            if(mUser == null) return ok().body(Mono.just(-1),String.class); // 
             
-            Mono<String> t = mUser.flatMap(u -> {
-                return databaseClient.execute("select * from User where id = :id").bind("id", u.getId()).as(User.class)
-                        .fetch().first().flatMap(nu -> {
-                            System.out.print(nu.getUserPassword());
-                            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-                            if (!passwordEncoder.matches(u.getPassword(), nu.getUserPassword())) {
-                                return Mono.just("");
-                            }
-                            return Mono.just(jwtProduct.getKey(u.getId()));
-                        });         
-            });
-       
+            User user = mUser.block();
+
             return ok().cookie(
-                ResponseCookie.from("token", t.block())
+                ResponseCookie.from("token",jwtProduct.getKey(user.getUserId()))
                 .maxAge(JwtProduct.EXPIRATION_TIME)
                 .httpOnly(true) // 보안 취약점을 막기위해
-                .build()).body(Mono.just("asdf") ,String.class);
+                .build()).body(Mono.just(user.getIndexId()),String.class);
         });
     }
 
@@ -111,12 +121,11 @@ class UserController {
     @Bean
     public RouterFunction<?> verify() {
         return route(POST("/user/verify"), req -> {
-            Mono<LoginModel> mUser = req.bodyToMono(LoginModel.class);
+            Mono<Map> mUser = req.bodyToMono(Map.class);
             Mono<String> rs = mUser.flatMap(u -> {
-                System.out.println(u.getId());
-                System.out.println(u.getPassword());
+              
                 try {
-                    if (!jwtProduct.verify(u.getId(), u.getPassword())) {
+                    if (!jwtProduct.verify(u.get("id").toString(), req.cookies().get("token").toString())) {
                         return Mono.just("failure");
                     }
                 } catch (ParseException | JOSEException e) {
@@ -127,11 +136,12 @@ class UserController {
             return ok().body(rs, String.class);
         });
     }
+ 
     @Bean 
     public RouterFunction<?> update() {
         return route(POST("/user/update"), req -> {
-            Mono<HashMap<String, Object>> userRequest = req.bodyToMono(HashMap.class);
-            HashMap<String, Object> user = userRequest.block();
+            Mono<Map> userRequest = req.bodyToMono(Map.class);
+            Map<String, Object> user = userRequest.block();
             return ok().body(
                 databaseClient
                 .execute(
@@ -143,37 +153,19 @@ class UserController {
                     .onErrorReturn(0), Integer.class);
         });
     }
-    
     @Bean
     public RouterFunction<?> delete() {
         return route(POST("/user/delete"), req -> {
-            Mono<HashMap<String, Object>> userRequest = req.bodyToMono(HashMap.class);
+            Mono<HashMap> userRequest = req.bodyToMono(HashMap.class);
             HashMap<String, Object> user = userRequest.block();
             return ok().body(
                 databaseClient
                 .execute(
-                    "update user set userPassword = : pwd" + 
-                    "userEmail = : email")
-                    .bind("pwd", user.get("userPassword"))
-                    .bind("email", user.get("email"))
+                    "DELETE FROM user WHERE indexId = :id")
+                    .bind("id", user.get("id"))
                     .fetch().rowsUpdated()
                     .onErrorReturn(0), Integer.class);
         });
-    }
-    @Bean 
-    public RouterFunction<?> test() {
-        return route(GET("/tt"),
-
-
-         req -> ok().body( databaseClient
-                .execute(
-                    "insert into testtable(asdf, date, datet)" +
-                    "values(12345, :date,:datet)")
-                    .bind("date", GetTimeZone.getSeoulDate()) 
-                    .bind("datet", GetTimeZone.getSeoulDate())
-                    .fetch().rowsUpdated()
-                    .onErrorReturn(0), Integer.class));
-
     }
 
 }

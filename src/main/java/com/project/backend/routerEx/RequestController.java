@@ -21,7 +21,7 @@ public class RequestController {
     //checked
     @Bean
     public RouterFunction<?> requestInsert() {
-        return RouterFunctions.route(POST("/null"), requestHandler::insert);
+        return RouterFunctions.route(POST("/request/insert"), requestHandler::insert);
     }
 
     @Bean 
@@ -38,13 +38,12 @@ public class RequestController {
     //checked
     @Bean 
     public RouterFunction<?> selectAll() {
-        return RouterFunctions.route(GET("/ttt"),requestHandler::selectAll);
+        return RouterFunctions.route(GET("/selectAll"),requestHandler::selectAll);
     }
     
-
     @Bean 
     public RouterFunction<?> selectRequestsByTagContext() {
-        return RouterFunctions.route(POST("/asd"),requestHandler::selectRequestsByTagContext);
+        return RouterFunctions.route(POST("/selectRequestByTagContext"),requestHandler::selectRequestsByTagContext);
     }
     
 }

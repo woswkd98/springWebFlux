@@ -1,0 +1,47 @@
+
+
+베이스 경로 /user
+
+로그인 
+/login
+let datas = { 
+            id : "zxcv", 
+            password :1234, //"1234ttac321",
+};
+
+res -> indexId // 혹시 검색용으로 필요할까봐 넘겨줌 
+
+회원가입
+ /join
+let datas = { 
+    index : 0,
+    userId : "zxcv", 
+    userPassword : "1234",
+    userName : "asdfg",
+    userEmail : "woswkd98@naver.com"
+}
+//logout
+/logout
+
+토큰 검사
+/verify
+{id : "asdf"} // 토큰은 쿠키에서 찾음
+
+
+
+
+리퀘스트 베이스 경로 /request
+/insert
+
+
+
+
+
+/selectAll
+select r.* from request r order by r.deadLine desc 내림차순임 기본이 
+
+/selectByCategory 
+카테고리 순 정렬  
+{category : "IT"} 
+
+/selectRequestsByTagContext 태그의 문자열과 같은 요청들을 검색 
