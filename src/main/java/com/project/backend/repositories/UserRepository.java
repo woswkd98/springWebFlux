@@ -11,8 +11,6 @@ public interface UserRepository extends ReactiveCrudRepository<User, Long> {
     @Query("SELECT * FROM User")
     Flux<User> getAll();
 
-    @Query("select u from User u where u.id = :id and u.password : password")
-    Flux<User> findByIdAndPwd(User user);
 
     @Query("select u from User u where u.id = :id")
     Flux<User> findById(String id);

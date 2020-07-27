@@ -14,14 +14,14 @@ public interface RequestRepository extends ReactiveCrudRepository<Request, Long>
         "insert into Request(category, context , uploadAt, deadLine, hopeDate, user_indexId )" +
         "values ( :category, :context , :uploadAt, :deadLine, :hopeDate, :user_indexId)"
         )
-    public Mono<Request> requestInsert(
+    public Mono<Integer> requestInsert(
         String category, 
         String context, 
         String uploadAt,
         String deadLine,
         String hopeDate,
         int user_indexId 
-        );
+    );
 
    
     @Query(

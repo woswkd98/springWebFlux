@@ -29,38 +29,38 @@ import java.util.List;
 @Component
 public class RequestHandler {
     
+    // autowired가 스프링 4부터 이렇게 쓰면 자동으로 된다 
     private final DatabaseClient databaseClient;
     private final RequestRepository requestRepository;
-    public RequestHandler(DatabaseClient databaseClient
-    ,RequestRepository requestRepository
+
+    public RequestHandler(
+        DatabaseClient databaseClient,
+        RequestRepository requestRepository
     ) {
         this.databaseClient = databaseClient;
         this.requestRepository = requestRepository;
     }
     
-    
-    
     public Mono<ServerResponse> insert(ServerRequest req) {
 
         Mono<RequestGetter> mbody = req.bodyToMono(RequestGetter.class);
         Mono<Integer> request = mbody.flatMap(mBody-> {
-            return Mono.just( requestRepository.requestInsert( 
+            return requestRepository.requestInsert( 
                 mBody.getCategory(),
                 mBody.getContext(),
                 GetTimeZone.getSeoulDate(),
                 mBody.getDeadline(),
                 mBody.getHopeDate(),
                 mBody.getUserId()
-            ).block().getRequestId());
- 
-
+            ).flatMap(mRequest -> {
+                System.out.println(mRequest);
+                return Mono.just(mRequest);
+            });
         });
+        
         System.out.println(request.block());
         return ok().body(
             request, Request.class);
-
-        
-        
     }
 
     @Transactional //요 부분에서 요청을 삭제하면 그 요청에 대한 입찰도 같이 삭제해야함 따라서 두개의 쿼리문을 하나로
@@ -68,7 +68,7 @@ public class RequestHandler {
         
         Mono<HashMap> productRequest = req.bodyToMono(HashMap.class);
         HashMap<String, Object> mRequest = productRequest.block();
-        System.out.print(mRequest.get("requestId"));
+ 
         Mono<Integer> rs = databaseClient
         .execute(
             "delete from bidding where request_requestId = :requestId")
@@ -123,8 +123,6 @@ public class RequestHandler {
                      map.get("hopeDate").toString(),
                      (int)map.get("user_indexId")
                 ));
-
-
             });
 
         return ok().body(rs, Request.class);

@@ -113,4 +113,10 @@ https://team-platform.tistory.com/45
 
 오늘 에러 
 https://oysu.tistory.com/50 이거 참조 
-얘네들이 
+
+
+
+// 오늘 끙끙대던거 내가 원하는 것은 insert 후에 그 id값을 받아와서 그 아이디 값을 태그 저장할 때 같이 넣고 싶었는데 그에 대한 내용이 여깄다
+// Flux에 대한 이해가 전반적으로 좀 더 필요할 것 같다 
+// 아직 못찾음 다른 링크 
+https://spring.io/blog/2016/11/28/going-reactive-with-spring-data
