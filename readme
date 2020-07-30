@@ -116,7 +116,29 @@ https://oysu.tistory.com/50 이거 참조
 
 
 
-// 오늘 끙끙대던거 내가 원하는 것은 insert 후에 그 id값을 받아와서 그 아이디 값을 태그 저장할 때 같이 넣고 싶었는데 그에 대한 내용이 여깄다
+
 // Flux에 대한 이해가 전반적으로 좀 더 필요할 것 같다 
 // 아직 못찾음 다른 링크 
 https://spring.io/blog/2016/11/28/going-reactive-with-spring-data
+
+일단 방법 1 
+insert -> select
+방법 2
+MySQL의 LAST_INSERT_ID() 함수 이용해서 가장 최근에 성공된 insert 구문의 첫번째 컬럼값 반환 
+얘는 다른 커넥션에서 접근했을 때 원하는 값을 도출하지 못할 가능성이 있다 마지막이므로 내가 성공했더라도 마지막인 다른것이 올라온다
+
+방법 3 애초에 이럴게 아니라 그냥 고유키를 만들어서 집어넣고 그것을 저장하고 있다가 다른쪽에 쓴다 
+얘네가 nonblocking에 확실히 잘되는지 모르겠다 
+
+2번쓰고 
+https://cirius.tistory.com/1139 
+
+
+2번 함수 불러오는 방법을 모르겠음 도저히 모르겠다 
+
+3번 으로 바꾼다 진짜 어쩔 수 없이 바꿨다 
+select UUID(); 이건 또 먹히네 아 이거씀  
+
+프로시져 쓰면되는걸... 함수 콜하면 되는걸.... 난 왜 이랬나..
+프로시져에 대한 내용 여기서 jpa를 쓸 수 있다면 데이터를 가공해서 쓰지만 없으면 뭐 어떻게 써야지
+http://blog.naver.com/PostView.nhn?blogId=jwyoon25&logNo=221490667508&categoryNo=0&parentCategoryNo=0&viewDate=&currentPage=1&postListTopCurrentPage=1&from=postView

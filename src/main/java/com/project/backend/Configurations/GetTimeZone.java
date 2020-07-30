@@ -23,13 +23,15 @@ public class GetTimeZone {
 
     public static String getSeoulDate() {
         TimeZone time;
+
         Date date = new Date();
         time = TimeZone.getTimeZone("Asia/Seoul");
         System.out.println(time);
         df.setTimeZone(time);
         return df.format(date);
-
     }
+
+    
 
 
 }

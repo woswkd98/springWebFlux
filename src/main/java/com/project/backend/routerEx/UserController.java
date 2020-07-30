@@ -141,31 +141,33 @@ class UserController {
     public RouterFunction<?> update() {
         return route(POST("/user/update"), req -> {
             Mono<Map> userRequest = req.bodyToMono(Map.class);
-            Map<String, Object> user = userRequest.block();
-            return ok().body(
-                databaseClient
+            
+            return ok().body(userRequest.flatMap(mUser -> {
+                return databaseClient
                 .execute(
                     "update user set userPassword = : pwd" + 
                     "userEmail = : email")
-                    .bind("pwd", user.get("userPassword"))
-                    .bind("email", user.get("email"))
+                    .bind("pwd", mUser.get("userPassword"))
+                    .bind("email", mUser.get("email"))
                     .fetch().rowsUpdated()
-                    .onErrorReturn(0), Integer.class);
+                    .onErrorReturn(0);
+            }), Integer.class);
+                
         });
     }
     @Bean
     public RouterFunction<?> delete() {
+        
         return route(POST("/user/delete"), req -> {
             Mono<HashMap> userRequest = req.bodyToMono(HashMap.class);
-            HashMap<String, Object> user = userRequest.block();
-            return ok().body(
-                databaseClient
+            return ok().body(userRequest.flatMap(mUser -> {
+                return databaseClient
                 .execute(
                     "DELETE FROM user WHERE indexId = :id")
-                    .bind("id", user.get("id"))
+                    .bind("id", mUser.get("id"))
                     .fetch().rowsUpdated()
-                    .onErrorReturn(0), Integer.class);
+                    .onErrorReturn(0);
+            }), Integer.class);
         });
     }
-
 }

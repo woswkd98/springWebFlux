@@ -9,80 +9,66 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
 import org.springframework.data.r2dbc.core.DatabaseClient;
-
+import org.springframework.data.spel.spi.Function;
 import org.springframework.stereotype.Component;
 
 import org.springframework.transaction.annotation.Transactional;
-
 
 import com.project.backend.Configurations.GetTimeZone;
 import com.project.backend.Model.*;
 
 import com.project.backend.repositories.RequestRepository;
+import com.project.backend.repositories.TagRepository;
 
+import java.util.Set;
+import java.util.Map.Entry;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
-
-
+import java.security.SecureRandom;
 // 이제 controller 안에 덕지덕지 붙이는게 싫으니 따로 만들자
 @Component
 public class RequestHandler {
-    
-    // autowired가 스프링 4부터 이렇게 쓰면 자동으로 된다 
+
+    // autowired가 스프링 4부터 이렇게 쓰면 자동으로 된다
     private final DatabaseClient databaseClient;
     private final RequestRepository requestRepository;
+    private final TagRepository tagRepository;
 
     public RequestHandler(
-        DatabaseClient databaseClient,
-        RequestRepository requestRepository
+        DatabaseClient databaseClient, 
+        RequestRepository requestRepository,
+        TagRepository tagRepository
     ) {
         this.databaseClient = databaseClient;
         this.requestRepository = requestRepository;
+        this.tagRepository = tagRepository;
     }
-    
+
+
     public Mono<ServerResponse> insert(ServerRequest req) {
 
-        Mono<RequestGetter> mbody = req.bodyToMono(RequestGetter.class);
-        Mono<Integer> request = mbody.flatMap(mBody-> {
-            return requestRepository.requestInsert( 
-                mBody.getCategory(),
-                mBody.getContext(),
-                GetTimeZone.getSeoulDate(),
-                mBody.getDeadline(),
-                mBody.getHopeDate(),
-                mBody.getUserId()
-            ).flatMap(mRequest -> {
-                System.out.println(mRequest);
-                return Mono.just(mRequest);
-            });
-        });
-        
-        System.out.println(request.block());
-        return ok().body(
-            request, Request.class);
+    return ok().body(req.bodyToMono(RequestGetter.class).flatMap(map -> {
+        return requestRepository.insertThenRetrunId(
+            map.getCategory(), 
+            map.getContext(),
+            GetTimeZone.getSeoulDate(),
+            map.getDeadline(),
+            map.getHopeDate(),
+            map.getUserId()).flatMap(requestId ->{
+                for(int i =0 ; i < map.getTags().length; ++i) {
+                    tagRepository.insertTag(map.getTags()[i], requestId).subscribe();
+                }
+                return Mono.just(requestId);
+            });   
+        }),Integer.class);
     }
 
-    @Transactional //요 부분에서 요청을 삭제하면 그 요청에 대한 입찰도 같이 삭제해야함 따라서 두개의 쿼리문을 하나로
+   
     public Mono<ServerResponse> delete(ServerRequest req) {
         
-        Mono<HashMap> productRequest = req.bodyToMono(HashMap.class);
-        HashMap<String, Object> mRequest = productRequest.block();
- 
-        Mono<Integer> rs = databaseClient
-        .execute(
-            "delete from bidding where request_requestId = :requestId")
-        .bind("requestId",  mRequest.get("requestId"))
-        .fetch()
-        .rowsUpdated()
-        .then(databaseClient
-            .execute(
-                "delete from request where requestId = :requestId" )
-            .bind("requestId",  mRequest.get("requestId"))
-            .fetch()
-            .rowsUpdated().onErrorReturn(0))
-        .onErrorReturn(0);;
-    
+        
         return ok().body(rs, Integer.class);
     }
 
@@ -124,7 +110,9 @@ public class RequestHandler {
                      (int)map.get("user_indexId")
                 ));
             });
-
+            
+        
+        
         return ok().body(rs, Request.class);
     }
 
@@ -136,5 +124,8 @@ public class RequestHandler {
         return ok().body(
             temp,Request.class);
     }
+
+
+
 
 }

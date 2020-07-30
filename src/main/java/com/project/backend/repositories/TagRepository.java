@@ -32,4 +32,8 @@ public interface TagRepository extends ReactiveCrudRepository<Tag, Long> {
     )
     public Flux<Request> selectTagsByRequestFromRequestId(int id);
 
+    @Query("call insertTag(:inContext, :requestId)")
+    public Mono<Integer> insertTag(String inContext, int requestId);
+
+
 }
