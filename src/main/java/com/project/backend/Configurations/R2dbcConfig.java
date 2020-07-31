@@ -10,15 +10,14 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import io.r2dbc.spi.ConnectionFactories;
 import io.r2dbc.spi.ConnectionFactory;
 
-
-@EnableTransactionManagement
 @Configuration
+@EnableTransactionManagement
 public class R2dbcConfig extends AbstractR2dbcConfiguration {
     
     @Override
     @Bean
     public ConnectionFactory connectionFactory() {
-        String url = "r2dbcs:mysql://scott:tiger@localhost:3306/bidding";        
+        String url = "r2dbcs:mysql://root:1234@localhost:3306/bidding";        
         ConnectionFactory connectionFactory = ConnectionFactories.get(url);
         return connectionFactory;
     }

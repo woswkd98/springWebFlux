@@ -31,6 +31,7 @@ import com.project.backend.Configurations.GetTimeZone;
 import com.project.backend.Model.*;
 
 import com.project.backend.jwt.JwtProduct;
+import com.project.backend.repositories.UserRepository;
 
 import java.text.ParseException;
 import java.util.List;
@@ -44,13 +45,16 @@ class UserController {
     JwtProduct jwtProduct;
 
     private final DatabaseClient databaseClient;
+    private final UserRepository userRepository;
 
-    public UserController(DatabaseClient databaseClient) {
+    public UserController(DatabaseClient databaseClient,
+    UserRepository userRepository) {
         this.databaseClient = databaseClient;
-
+        this.userRepository = userRepository;
     }
 
     // 
+    
 
     @Bean
     public RouterFunction<?> join() {
@@ -79,32 +83,33 @@ class UserController {
     @Bean
     public RouterFunction<?> login() {
         return route(POST("/user/login"), req -> {
-            Mono<LoginModel> mLogin= req.bodyToMono(LoginModel.class);
-            LoginModel lm = mLogin.block();
-            Mono<User> mUser = databaseClient.execute("select * from user where userId = :id")
+            Mono<LoginModel> mLogin = req.bodyToMono(LoginModel.class);
+
+            Mono<User> user = mLogin.flatMap(lm -> { 
+            return databaseClient.execute("select * from user where userId = :id")
             .as(User.class)
             .bind("id", lm.getId())
-
             .fetch().first().flatMap(nu -> {
-                     
                 BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
                 if (!passwordEncoder.matches(lm.getPassword(), nu.getUserPassword())) {
                     return Mono.just(nu);
                 }
                 return null;
-            });         
-
-            if(mUser == null) return ok().body(Mono.just(-1),String.class); // 
-            
-            User user = mUser.block();
-
-            return ok().cookie(
-                ResponseCookie.from("token",jwtProduct.getKey(user.getUserId()))
-                .maxAge(JwtProduct.EXPIRATION_TIME)
-                .httpOnly(true) // 보안 취약점을 막기위해
-                .build()).body(Mono.just(user.getIndexId()),String.class);
+            });        
         });
+        
+
+
+        return ok().cookie(
+            user.flatMap(u -> { 
+                return ResponseCookie
+                .from("token",jwtProduct.getKey(u.getUserId())) 
+                .maxAge(JwtProduct.EXPIRATION_TIME)
+                .httpOnly(true)
+                .build();}).body(user.flatMap(u -> u.getIndexId()),Integer.class);
+   
+           
     }
 
     @Bean
@@ -123,7 +128,6 @@ class UserController {
         return route(POST("/user/verify"), req -> {
             Mono<Map> mUser = req.bodyToMono(Map.class);
             Mono<String> rs = mUser.flatMap(u -> {
-              
                 try {
                     if (!jwtProduct.verify(u.get("id").toString(), req.cookies().get("token").toString())) {
                         return Mono.just("failure");
@@ -146,9 +150,11 @@ class UserController {
                 return databaseClient
                 .execute(
                     "update user set userPassword = : pwd" + 
-                    "userEmail = : email")
+                    "userEmail = : email userName : name where indexId = :id")
+                    .bind("id", mUser.get("id"))
                     .bind("pwd", mUser.get("userPassword"))
                     .bind("email", mUser.get("email"))
+                    .bind("name", mUser.get("name"))
                     .fetch().rowsUpdated()
                     .onErrorReturn(0);
             }), Integer.class);
@@ -169,5 +175,39 @@ class UserController {
                     .onErrorReturn(0);
             }), Integer.class);
         });
+    }
+    @Bean
+    public RouterFunction<?> getAll() {
+        return route(GET("/user/userList"), req -> {
+                return ok().body(databaseClient
+                .execute("select * from user ")
+                .fetch()
+                .all()
+              , User.class);
+        });
+    }
+    @Bean
+    public RouterFunction<?> findById() {
+        return route(POST("/user/findByPk"), req -> {
+           return ok().body( databaseClient
+           .execute("select * from user where indexId = :id")
+           .bind("id",req.bodyToMono(Map.class).block().get("id"))
+           .fetch()
+           .first(), User.class);
+        });
+
+        
+            
+    }
+
+    @Bean
+    public RouterFunction<?> findByUserId() {
+        return route(POST("/user/findByUserId"), req -> {
+           return ok().body( databaseClient
+           .execute("select * from user where userId = :userId")
+           .bind("id",req.bodyToMono(Map.class).block().get("userId"))
+           .fetch()
+           .first(), User.class);
+        });    
     }
 }

@@ -7,7 +7,7 @@ import static org.springframework.web.reactive.function.server.ServerResponse.ok
 
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
-
+import org.graalvm.compiler.nodes.ReturnNode;
 import org.springframework.data.r2dbc.core.DatabaseClient;
 import org.springframework.data.spel.spi.Function;
 import org.springframework.stereotype.Component;
@@ -65,13 +65,15 @@ public class RequestHandler {
         }),Integer.class);
     }
 
-   
-    public Mono<ServerResponse> delete(ServerRequest req) {
+    // 이 때는 tag 
+    public Mono<ServerResponse> deleteWhenSuccessBidding(ServerRequest req) {
         
         
-        return ok().body(rs, Integer.class);
-    }
 
+
+        return ok().body(null, Integer.class);
+    }
+    // bloc고쳐
     public Mono<ServerResponse> selectByCategory(ServerRequest req) {
         Flux<Request> rs = 
             databaseClient.execute("select * from request where category = :category")
@@ -116,15 +118,27 @@ public class RequestHandler {
         return ok().body(rs, Request.class);
     }
 
+    @Transactional
     public Mono<ServerResponse> selectRequestsByTagContext(ServerRequest req) {
- 
-        Flux<Request> temp = requestRepository
-        .selectRequestsByTagContext(req.bodyToMono(String.class).block());
-  
-        return ok().body(
-            temp,Request.class);
+        Mono<String> mStr =  req.bodyToMono(String.class);
+    
+        return ok().body(mStr.flux().flatMap(str -> requestRepository
+        .selectRequestsByTagContext(str)), Request.class);
     }
 
+    public Mono<ServerResponse> deleteRequestWhenCancel(ServerRequest req) {
+        
+       
+
+ 
+        return ok().body( req.bodyToMono(Integer.class)
+        .flatMap(i -> {
+            return requestRepository.updateTagWhenCancel(i)//  태그 업데이트된거 취소시키고(requestCount + 1 된것을 다시 되돌리고)
+            .then(requestRepository.deleteTagRequestCountIsZero()) // 0이면 얘가 삽입되고 나서 zero가 된것
+            .then(requestRepository.deleteReqHasTag(i))
+            .then()
+        }), Integer.class);
+    }
 
 
 

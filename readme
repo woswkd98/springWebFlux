@@ -142,3 +142,20 @@ select UUID(); 이건 또 먹히네 아 이거씀
 프로시져 쓰면되는걸... 함수 콜하면 되는걸.... 난 왜 이랬나..
 프로시져에 대한 내용 여기서 jpa를 쓸 수 있다면 데이터를 가공해서 쓰지만 없으면 뭐 어떻게 써야지
 http://blog.naver.com/PostView.nhn?blogId=jwyoon25&logNo=221490667508&categoryNo=0&parentCategoryNo=0&viewDate=&currentPage=1&postListTopCurrentPage=1&from=postView
+
+UPDATE tag 
+SET bidCount = bidCount + 1
+WHERE tagId IN (
+	SELECT tagId FROM (SELECT t.tagId FROM request r 
+	INNER JOIN request_has_tag rht 
+	ON r.requestId = rht.request_requestId
+	INNER JOIN tag t 
+	ON t.tagId = rht.tag_tagId 
+	WHERE r.requestId = 3 #해당 요청과 관련된 태그들의 아이디를 찾는다
+	) AS tagIds 
+);
+
+이 구문에서 tag랑 tag 별칭 t 랑해서 where 절에 같은 테이블로 비교를 하면 에러띄운다 
+따라서 SELECT tagId FROM 요렇게 가상의 테이블을 하나 만들고 AS tagIds별칭까지 만들어 줘야 실행이 된다
+
+

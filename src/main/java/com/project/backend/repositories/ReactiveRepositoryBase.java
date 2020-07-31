@@ -8,4 +8,5 @@ public interface ReactiveRepositoryBase<T> extends ReactiveCrudRepository<T,Long
     
     @Query("select UUID()")
     public Mono<String> genUuid();
+
 }

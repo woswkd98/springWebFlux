@@ -24,10 +24,7 @@ public class RequestController {
         return RouterFunctions.route(POST("/request/insert"), requestHandler::insert);
     }
 
-    @Bean 
-    public RouterFunction<?> requestDelete() {
-        return RouterFunctions.route(DELETE("/delete"), requestHandler::delete);
-    }
+    
     
     //checked
     @Bean 

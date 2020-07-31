@@ -1,6 +1,6 @@
 package com.project.backend.Model;
 
-public class bidding {
+public class Bidding {
     private int biddingId;
     private String uploadAt;
     private int price;
@@ -47,7 +47,7 @@ public class bidding {
         this.seller_sellerId = seller_sellerId;
     }
 
-    public bidding(int biddingId, String uploadAt, int price, int request_requestId, int seller_sellerId) {
+    public Bidding(int biddingId, String uploadAt, int price, int request_requestId, int seller_sellerId) {
         this.biddingId = biddingId;
         this.uploadAt = uploadAt;
         this.price = price;
@@ -55,6 +55,6 @@ public class bidding {
         this.seller_sellerId = seller_sellerId;
     }
 
-    public bidding() {
+    public Bidding() {
     }
 }

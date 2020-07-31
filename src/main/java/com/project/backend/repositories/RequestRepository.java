@@ -61,4 +61,49 @@ public interface RequestRepository extends ReactiveRepositoryBase<Request> {
     )
     public Flux<Request> selectRequestByContextSortByDeadLine(String context);
     
+    // 입찰 성사 때
+    @Query(
+        "UPDATE tag"+ 
+		"SET bidCount = bidCount + 1"+
+		"WHERE tagId IN ("+
+		"	SELECT tagId FROM (SELECT t.tagId FROM request r "+
+		"	INNER JOIN request_has_tag rht "+
+		"	ON r.requestId = rht.request_requestId"+
+		"	INNER JOIN tag t "+
+		"	ON t.tagId = rht.tag_tagId "+
+		"	WHERE r.requestId = :requestId "+
+		"	) AS tagIds "+
+		");"
+    )
+    public Mono<Integer> updateTagWhenSuccessBidding(int requestId); 
+
+    // bidding성공했을 때 요청 아이디와 같고 biddingId가 다른 모든애들을 삭제한다
+    @Query("delete from bidding where requestId = :requestId and biddingId != :biddingId")
+    public Mono<Integer> deleteBiddingWhenSuccess(int requestId, int biddingId);
+  
+   
+    
+    @Query("delete from request_has_tag where request_requestId = :requestId")
+    public Mono<Integer> deleteReqHasTag(int requestId); 
+
+    //취소 
+    @Query(
+        "UPDATE tag"+ 
+		"SET requestCount = requestCount - 1"+
+		"WHERE tagId IN ("+
+		"	SELECT tagId FROM (SELECT t.tagId FROM request r "+
+		"	INNER JOIN request_has_tag rht "+
+		"	ON r.requestId = rht.request_requestId"+
+		"	INNER JOIN tag t "+
+		"	ON t.tagId = rht.tag_tagId "+
+		"	WHERE r.requestId = :requestId "+
+		"	) AS tagIds "+
+		");"
+    )
+    public Mono<Integer> updateTagWhenCancel(int requestId);
+
+    @Query("delete from tag  where requestCount = 0")
+    public Mono<Integer> deleteTagRequestCountIsZero();
+
+
 }

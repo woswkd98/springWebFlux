@@ -16,21 +16,21 @@ import org.springframework.data.relational.core.mapping.Table;
 
 
 
-
+@Table("user")
 public class User {
 
-
+  
     private int indexId;
-
+    
     private String userId; 
     
-
+  
     private String userPassword;
 
-  
+   
     private String userName;
 
-  
+
     private String userEmail;
 
     

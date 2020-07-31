@@ -6,6 +6,7 @@ import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import com.project.backend.Model.User;
+
 public interface UserRepository extends ReactiveCrudRepository<User, Long> {
 
     @Query("SELECT * FROM User")

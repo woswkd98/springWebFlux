@@ -1,6 +1,6 @@
 package com.project.backend.Model;
 
-public class review {
+public class Review {
     int reviewId;
     float grade;
     String context;
@@ -48,7 +48,7 @@ public class review {
         this.userId = userId;
     }
 
-    public review(int reviewId, float grade, String context, int sellerId, int userId) {
+    public Review(int reviewId, float grade, String context, int sellerId, int userId) {
         this.reviewId = reviewId;
         this.grade = grade;
         this.context = context;
@@ -56,6 +56,6 @@ public class review {
         this.userId = userId;
     }
 
-    public review() {
+    public Review() {
     }
 }

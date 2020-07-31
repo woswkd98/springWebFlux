@@ -1,6 +1,6 @@
 package com.project.backend.Model;
 
-public class seller {
+public class Seller {
     private int sellerId;
     private String portfolio;
     private String ImageLink;
@@ -57,7 +57,7 @@ public class seller {
         this.reviewerCount = reviewerCount;
     }
     
-    public seller() {
+    public Seller() {
     }
 
     public int getUserIndexId() {
@@ -68,7 +68,7 @@ public class seller {
         this.userIndexId = userIndexId;
     }
 
-    public seller(int sellerId, String portfolio, String imageLink, int imageCount, int sellerGrade, int reviewerCount,
+    public Seller(int sellerId, String portfolio, String imageLink, int imageCount, int sellerGrade, int reviewerCount,
             int userIndexId) {
         this.sellerId = sellerId;
         this.portfolio = portfolio;
