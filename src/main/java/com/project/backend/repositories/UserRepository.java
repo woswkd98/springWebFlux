@@ -14,5 +14,5 @@ public interface UserRepository extends ReactiveCrudRepository<User, Long> {
 
 
     @Query("select u from User u where u.id = :id")
-    Flux<User> findById(String id);
+    Mono<User> findByUserId(String id);
 }

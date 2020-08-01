@@ -14,9 +14,7 @@ import com.project.backend.Model.*;
 public interface RequestRepository extends ReactiveRepositoryBase<Request> {
     // https://www.baeldung.com/spring-data-jpa-stored-procedures
 
-    @Query
-    ("call testPro(:temp)")
-    public Mono<Integer> inserttest(String[] temp);
+  
 
     @Query(
         "insert into Request(requestId, category, context , uploadAt, deadLine, hopeDate, user_indexId )" +
@@ -78,7 +76,9 @@ public interface RequestRepository extends ReactiveRepositoryBase<Request> {
     public Mono<Integer> updateTagWhenSuccessBidding(int requestId); 
 
     // bidding성공했을 때 요청 아이디와 같고 biddingId가 다른 모든애들을 삭제한다
-    @Query("delete from bidding where requestId = :requestId and biddingId != :biddingId")
+    @Query("delete from 
+    
+    bidding where request_requestId = :requestId and biddingId != :biddingId")
     public Mono<Integer> deleteBiddingWhenSuccess(int requestId, int biddingId);
   
    
@@ -104,6 +104,9 @@ public interface RequestRepository extends ReactiveRepositoryBase<Request> {
 
     @Query("delete from tag  where requestCount = 0")
     public Mono<Integer> deleteTagRequestCountIsZero();
+
+    @Query("delete from request where requestId = :requestId")
+    public Mono<Integer> deleteRequest(int requestId);
 
 
 }
