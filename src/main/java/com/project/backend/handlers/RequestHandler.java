@@ -7,7 +7,7 @@ import static org.springframework.web.reactive.function.server.ServerResponse.ok
 
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
-import org.graalvm.compiler.nodes.ReturnNode;
+
 import org.springframework.data.r2dbc.core.DatabaseClient;
 import org.springframework.data.spel.spi.Function;
 import org.springframework.stereotype.Component;
@@ -65,19 +65,12 @@ public class RequestHandler {
         }),Integer.class);
     }
 
-    // 이 때는 tag 
-    public Mono<ServerResponse> deleteWhenSuccessBidding(ServerRequest req) {
-        
-        
 
-
-        return ok().body(null, Integer.class);
-    }
     // bloc고쳐
     public Mono<ServerResponse> selectByCategory(ServerRequest req) {
-        Flux<Request> rs = 
+        Mono<Map<String, Object>> rs = req.bodyToMono(Map.class);
             databaseClient.execute("select * from request where category = :category")
-            .bind("category", req.bodyToMono(Map.class).block().get("category"))
+            .bind("category",rs.map(map ->  map.get("category")))
             .as(Request.class)
             .fetch()
             .all();
@@ -96,25 +89,8 @@ public class RequestHandler {
     */
 
     public Mono<ServerResponse> selectAll(ServerRequest req) {
-        Flux<Request> rs =
-            databaseClient.execute("select r.* from request r order by r.deadLine desc")
-            .fetch()
-            .all()
-            .flatMap(map -> {
-                return Flux.just(
-                 new Request(
-                    (int)map.get("requestId"),
-                     map.get("category").toString(),
-                     map.get("context").toString(),
-                     map.get("uploadAt").toString(),
-                     map.get("deadLine").toString(),
-                     map.get("hopeDate").toString(),
-                     (int)map.get("user_indexId")
-                ));
-            });
-            
-        
-        
+        Flux<Request> rs = requestRepository.selectAllOrderByDeadLine();
+
         return ok().body(rs, Request.class);
     }
 
@@ -126,17 +102,14 @@ public class RequestHandler {
         .selectRequestsByTagContext(str)), Request.class);
     }
 
+    @Transactional
     public Mono<ServerResponse> deleteRequestWhenCancel(ServerRequest req) {
-        
-       
-
- 
         return ok().body( req.bodyToMono(Integer.class)
         .flatMap(i -> {
             return requestRepository.updateTagWhenCancel(i)//  태그 업데이트된거 취소시키고(requestCount + 1 된것을 다시 되돌리고)
-            .then(requestRepository.deleteTagRequestCountIsZero()) // 0이면 얘가 삽입되고 나서 zero가 된것
-            .then(requestRepository.deleteReqHasTag(i))
-            .then()
+            .then(requestRepository.deleteTagRequestCountIsZero()) // 0이면 얘가 삽입되고 생성된거 그래서 삭제 
+            .then(requestRepository.deleteReqHasTag(i)) // request_has_tag 삭제 
+            .then(requestRepository.deleteRequest(i)); // request  삭제 
         }), Integer.class);
     }
 

@@ -24,8 +24,6 @@ public class RequestController {
         return RouterFunctions.route(POST("/request/insert"), requestHandler::insert);
     }
 
-    
-    
     //checked
     @Bean 
     public RouterFunction<?> selectRequestByCategory() {
@@ -42,5 +40,8 @@ public class RequestController {
     public RouterFunction<?> selectRequestsByTagContext() {
         return RouterFunctions.route(POST("/selectRequestByTagContext"),requestHandler::selectRequestsByTagContext);
     }
-    
+    public RouterFunction<?> deleteRequestWhenCancel() {
+        return RouterFunctions.route(POST("/deleteRequestWhenCancel"),requestHandler::deleteRequestWhenCancel);
+    }
+
 }

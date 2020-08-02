@@ -7,6 +7,7 @@ import reactor.core.publisher.Mono;
 
 import reactor.core.publisher.Flux;
 
+import java.util.Date;
 import java.util.Map;
 
 import com.project.backend.Model.*;
@@ -75,13 +76,7 @@ public interface RequestRepository extends ReactiveRepositoryBase<Request> {
     )
     public Mono<Integer> updateTagWhenSuccessBidding(int requestId); 
 
-    // bidding성공했을 때 요청 아이디와 같고 biddingId가 다른 모든애들을 삭제한다
-    @Query("delete from 
-    
-    bidding where request_requestId = :requestId and biddingId != :biddingId")
-    public Mono<Integer> deleteBiddingWhenSuccess(int requestId, int biddingId);
-  
-   
+
     
     @Query("delete from request_has_tag where request_requestId = :requestId")
     public Mono<Integer> deleteReqHasTag(int requestId); 
@@ -108,5 +103,20 @@ public interface RequestRepository extends ReactiveRepositoryBase<Request> {
     @Query("delete from request where requestId = :requestId")
     public Mono<Integer> deleteRequest(int requestId);
 
+    @Query("select r.* from request r where r.category = :category")
+    public Flux<Request> selectByCateory(String category);
 
+    @Query("select r.* from request r where r.deadLine = :deadLine")
+    public Flux<Request> selectAllOrderByDeadLine();
+
+    @Query("insert into bidding (uploadAt,price,request_requestId, user_userId)"
+    + " values (uploadAt,price, request_requestId, user_userId)")
+    public Mono<Integer> insertBidding(Date uploadAt, int price, int request_requestId, int user_uerId);
+    
+    // bidding성공했을 때 요청 아이디와 같고 biddingId가 다른 모든애들을 삭제한다
+    @Query("delete from bidding where request_requestId = :requestId and biddingId != :biddingId")
+    public Mono<Integer> deleteBiddingWhenSuccess(int requestId, int biddingId);
+      
+    @Query("select b.* from bidding b where b.request_requestId = :requestId")
+    public Flux<Bidding>  selectBiddingByUserIndexId(int indexId);
 }

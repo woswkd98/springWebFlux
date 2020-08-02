@@ -21,11 +21,11 @@ public class Request {
 
     private String category;
 
-    private String uploadAt;
+    private Date uploadAt;
 
-    private String deadLine;
+    private Date deadLine;
     
-    private String hopeDate;
+    private Date hopeDate;
  
     private int user_indexId;
 
@@ -53,27 +53,27 @@ public class Request {
         this.category = category;
     }
 
-    public String getUploadAt() {
+    public Date getUploadAt() {
         return uploadAt;
     }
 
-    public void setUploadAt(String uploadAt) {
+    public void setUploadAt(Date uploadAt) {
         this.uploadAt = uploadAt;
     }
 
-    public String getDeadLine() {
+    public Date getDeadLine() {
         return deadLine;
     }
 
-    public void setDeadLine(String deadLine) {
+    public void setDeadLine(Date deadLine) {
         this.deadLine = deadLine;
     }
 
-    public String getHopeDate() {
+    public Date getHopeDate() {
         return hopeDate;
     }
 
-    public void setHopeDate(String hopeDate) {
+    public void setHopeDate(Date hopeDate) {
         this.hopeDate = hopeDate;
     }
 
@@ -85,7 +85,7 @@ public class Request {
         this.user_indexId = user_indexId;
     }
 
-    public Request(int requestId, String context, String category, String uploadAt, String deadLine, String hopeDate,
+    public Request(int requestId, String context, String category, Date uploadAt, Date deadLine, Date hopeDate,
             int user_indexId) {
         this.requestId = requestId;
         this.context = context;
