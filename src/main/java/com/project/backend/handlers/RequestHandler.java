@@ -17,8 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.project.backend.Configurations.GetTimeZone;
 import com.project.backend.Model.*;
 
-import com.project.backend.repositories.RequestRepository;
-import com.project.backend.repositories.TagRepository;
+import com.project.backend.repositories.PublicRepository;
+
 
 import java.util.Set;
 import java.util.Map.Entry;
@@ -33,24 +33,23 @@ public class RequestHandler {
 
     // autowired가 스프링 4부터 이렇게 쓰면 자동으로 된다
     private final DatabaseClient databaseClient;
-    private final RequestRepository requestRepository;
-    private final TagRepository tagRepository;
+    private final PublicRepository publicRepository;
+
 
     public RequestHandler(
         DatabaseClient databaseClient, 
-        RequestRepository requestRepository,
-        TagRepository tagRepository
+        PublicRepository publicRepository
     ) {
         this.databaseClient = databaseClient;
-        this.requestRepository = requestRepository;
-        this.tagRepository = tagRepository;
+        this.publicRepository = publicRepository;
+
     }
 
 
     public Mono<ServerResponse> insert(ServerRequest req) {
 
     return ok().body(req.bodyToMono(RequestGetter.class).flatMap(map -> {
-        return requestRepository.insertThenRetrunId(
+        return publicRepository.insertThenReturnId(
             map.getCategory(), 
             map.getContext(),
             GetTimeZone.getSeoulDate(),
@@ -58,7 +57,7 @@ public class RequestHandler {
             map.getHopeDate(),
             map.getUserId()).flatMap(requestId ->{
                 for(int i =0 ; i < map.getTags().length; ++i) {
-                    tagRepository.insertTag(map.getTags()[i], requestId).subscribe();
+                    publicRepository.insertTag(map.getTags()[i], requestId).subscribe();
                 }
                 return Mono.just(requestId);
             });   
@@ -89,7 +88,7 @@ public class RequestHandler {
     */
 
     public Mono<ServerResponse> selectAll(ServerRequest req) {
-        Flux<Request> rs = requestRepository.selectAllOrderByDeadLine();
+        Flux<Request> rs = publicRepository.selectAllOrderByDeadLine();
 
         return ok().body(rs, Request.class);
     }
@@ -98,7 +97,7 @@ public class RequestHandler {
     public Mono<ServerResponse> selectRequestsByTagContext(ServerRequest req) {
         Mono<String> mStr =  req.bodyToMono(String.class);
     
-        return ok().body(mStr.flux().flatMap(str -> requestRepository
+        return ok().body(mStr.flux().flatMap(str -> publicRepository
         .selectRequestsByTagContext(str)), Request.class);
     }
 
@@ -106,10 +105,10 @@ public class RequestHandler {
     public Mono<ServerResponse> deleteRequestWhenCancel(ServerRequest req) {
         return ok().body( req.bodyToMono(Integer.class)
         .flatMap(i -> {
-            return requestRepository.updateTagWhenCancel(i)//  태그 업데이트된거 취소시키고(requestCount + 1 된것을 다시 되돌리고)
-            .then(requestRepository.deleteTagRequestCountIsZero()) // 0이면 얘가 삽입되고 생성된거 그래서 삭제 
-            .then(requestRepository.deleteReqHasTag(i)) // request_has_tag 삭제 
-            .then(requestRepository.deleteRequest(i)); // request  삭제 
+            return publicRepository.updateTagWhenCancel(i)//  태그 업데이트된거 취소시키고(requestCount + 1 된것을 다시 되돌리고)
+            .then(publicRepository.deleteTagRequestCount(0)) // 0이면 얘가 삽입되고 생성된거 그래서 삭제 
+            .then(publicRepository.deleteReqHasTag(i)) // request_has_tag 삭제 
+            .then(publicRepository.deleteRequest(i)); // request  삭제 
         }), Integer.class);
     }
 

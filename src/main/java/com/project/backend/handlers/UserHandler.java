@@ -3,8 +3,8 @@ package com.project.backend.handlers;
 import com.nimbusds.jose.JOSEException;
 import com.project.backend.Model.LoginModel;
 import com.project.backend.Model.User;
-import com.project.backend.repositories.RequestRepository;
-import com.project.backend.repositories.TagRepository;
+import com.project.backend.repositories.PublicRepository;
+
 import com.project.backend.repositories.UserRepository;
 
 import org.springframework.data.r2dbc.core.DatabaseClient;
@@ -31,13 +31,13 @@ public class UserHandler  {
     JwtProduct jwtProduct;
 
     private final DatabaseClient databaseClient;
-    private final UserRepository userRepository;
+    private final PublicRepository publicRepository;
     public UserHandler(
         DatabaseClient databaseClient,
-        UserRepository userRepository
+        PublicRepository publicRepository
     ) {
         this.databaseClient = databaseClient;
-        this.userRepository = userRepository;
+        this.publicRepository = publicRepository;
     }
 
 
@@ -61,12 +61,14 @@ public class UserHandler  {
         }), User.class);
     }
 
+
     public Mono<ServerResponse> login(ServerRequest req) {
         Mono<LoginModel> mLogin = req.bodyToMono(LoginModel.class);
 
         Mono<User> user = mLogin.flatMap(lm -> { 
-            return userRepository.findByUserId(lm.getId())
+            return publicRepository.findByUserId(lm.getId())
                 .flatMap(nu -> {
+
                 BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     
                 if (!passwordEncoder.matches(lm.getPassword(), nu.getUserPassword())) {
@@ -145,7 +147,7 @@ public class UserHandler  {
     public  Mono<ServerResponse> getAll(ServerRequest req) { 
 
         return ok().body(databaseClient
-            .execute("select * from user ")
+            .execute("select * from user")
             .fetch()
             .all()
             ,User.class);   
@@ -168,4 +170,25 @@ public class UserHandler  {
         .first(), User.class);
 
     }
+
+    public  Mono<ServerResponse> setUserState(ServerRequest req) {
+        Mono<Map<String, Object>> mMap = req.bodyToMono(Map.class);
+        return ok().body(mMap.flatMap(u -> publicRepository.updateUserWidthdraw((int)u.get("userState"))), Integer.class);
+    }
+
+    public Mono<ServerResponse> setSeller(ServerRequest req) {
+        Mono<Map<String, Object>> mMap = req.bodyToMono(Map.class);
+        return ok().body(
+            mMap.flatMap(map -> {
+                Mono<Integer> mId =  publicRepository.insertSellerThenReturnId(
+                    map.get("portfolio").toString(),
+                    map.get("imageLink").toString(),
+                    (int)map.get("imageCount")
+                );
+                
+                return mId.flatMap(id -> publicRepository.updateUserToSeller(id,(int)map.get("indexId")));
+            }), Integer.class);
+
+    }
+
 }
