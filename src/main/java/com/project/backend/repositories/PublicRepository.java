@@ -8,14 +8,15 @@ import reactor.core.publisher.Mono;
 import reactor.core.publisher.Flux;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+
 
 import com.project.backend.Model.*;
 
-public interface PublicRepository extends ReactiveRepositoryBase<Request> {
+public interface PublicRepository extends ReactiveCrudRepository<Request,Long> {
     // https://www.baeldung.com/spring-data-jpa-stored-procedures
     
+    @Query("select UUID()")
+    public Mono<String> genUuid();
 
     // 요청 삽입
     @Query(

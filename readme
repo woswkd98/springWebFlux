@@ -158,4 +158,7 @@ WHERE tagId IN (
 이 구문에서 tag랑 tag 별칭 t 랑해서 where 절에 같은 테이블로 비교를 하면 에러띄운다 
 따라서 SELECT tagId FROM 요렇게 가상의 테이블을 하나 만들고 AS tagIds별칭까지 만들어 줘야 실행이 된다
 
+https://spring.io/blog/2019/03/05/spring-hateoas-1-0-m1-released hateoas의 webflux 지원 
+
+// webclient랑 같이쓰는게 맞음 hateoas 
 

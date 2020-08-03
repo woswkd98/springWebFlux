@@ -2,7 +2,6 @@ package com.project.backend.Configurations;
 import java.text.*;
 import java.util.Date;
 import java.util.TimeZone;
-import org.springframework.stereotype.Component;
 
 
 public class GetTimeZone {

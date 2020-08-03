@@ -5,10 +5,8 @@ import com.project.backend.Model.LoginModel;
 import com.project.backend.Model.User;
 import com.project.backend.repositories.PublicRepository;
 
-import com.project.backend.repositories.UserRepository;
 
 import org.springframework.data.r2dbc.core.DatabaseClient;
-import org.springframework.http.HttpCookie;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -145,7 +143,7 @@ public class UserHandler  {
     }
 
     public  Mono<ServerResponse> getAll(ServerRequest req) { 
-
+ 
         return ok().body(databaseClient
             .execute("select * from user")
             .fetch()
@@ -172,12 +170,13 @@ public class UserHandler  {
     }
 
     public  Mono<ServerResponse> setUserState(ServerRequest req) {
-        Mono<Map<String, Object>> mMap = req.bodyToMono(Map.class);
+        Mono<Map> mMap = req.bodyToMono(Map.class);
+ 
         return ok().body(mMap.flatMap(u -> publicRepository.updateUserWidthdraw((int)u.get("userState"))), Integer.class);
     }
 
     public Mono<ServerResponse> setSeller(ServerRequest req) {
-        Mono<Map<String, Object>> mMap = req.bodyToMono(Map.class);
+        Mono<Map> mMap = req.bodyToMono(Map.class);
         return ok().body(
             mMap.flatMap(map -> {
                 Mono<Integer> mId =  publicRepository.insertSellerThenReturnId(

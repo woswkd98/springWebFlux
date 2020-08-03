@@ -9,7 +9,7 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
 import org.springframework.data.r2dbc.core.DatabaseClient;
-import org.springframework.data.spel.spi.Function;
+
 import org.springframework.stereotype.Component;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -67,9 +67,9 @@ public class RequestHandler {
 
     // bloc고쳐
     public Mono<ServerResponse> selectByCategory(ServerRequest req) {
-        Mono<Map<String, Object>> rs = req.bodyToMono(Map.class);
+        Mono<String> rs = req.bodyToMono(String.class);
             databaseClient.execute("select * from request where category = :category")
-            .bind("category",rs.map(map ->  map.get("category")))
+            .bind("category",rs.map(map ->  map))
             .as(Request.class)
             .fetch()
             .all();
@@ -96,7 +96,9 @@ public class RequestHandler {
     @Transactional
     public Mono<ServerResponse> selectRequestsByTagContext(ServerRequest req) {
         Mono<String> mStr =  req.bodyToMono(String.class);
-    
+        String temp;
+       
+        
         return ok().body(mStr.flux().flatMap(str -> publicRepository
         .selectRequestsByTagContext(str)), Request.class);
     }
