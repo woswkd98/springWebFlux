@@ -13,7 +13,7 @@ public class RequestGetter { // 리퀘스트 저장받을 떄 형식
     private int userId;
     private String context;
     private String category;
-    private String deadline;
+    private Long deadline;
     private String hopeDate;
     private String tags[];
 }

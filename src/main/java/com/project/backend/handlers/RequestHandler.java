@@ -19,14 +19,18 @@ import com.project.backend.Model.*;
 
 import com.project.backend.repositories.PublicRepository;
 
-
 import java.util.Set;
 import java.util.Map.Entry;
 import java.util.Map;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.security.SecureRandom;
+import java.util.Calendar;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+
 // 이제 controller 안에 덕지덕지 붙이는게 싫으니 따로 만들자
 @Component
 public class RequestHandler {
@@ -47,8 +51,9 @@ public class RequestHandler {
 
 
     public Mono<ServerResponse> insert(ServerRequest req) {
-
+    
     return ok().body(req.bodyToMono(RequestGetter.class).flatMap(map -> {
+        System.out.println(12512);
         return publicRepository.insertThenReturnId(
             map.getCategory(), 
             map.getContext(),
@@ -68,12 +73,13 @@ public class RequestHandler {
     // bloc고쳐
     public Mono<ServerResponse> selectByCategory(ServerRequest req) {
         Mono<String> rs = req.bodyToMono(String.class);
-            databaseClient.execute("select * from request where category = :category")
-            .bind("category",rs.map(map ->  map))
-            .as(Request.class)
-            .fetch()
-            .all();
-        return ok().body(rs, Request.class);
+
+        return  ok().body(databaseClient.execute("select * from request where category = :category")
+        .bind("category", rs.block())
+        .fetch()
+        .all().collectList() // dl
+         , List.class);
+       
     }
 
 
@@ -97,12 +103,11 @@ public class RequestHandler {
     public Mono<ServerResponse> selectRequestsByTagContext(ServerRequest req) {
         Mono<String> mStr =  req.bodyToMono(String.class);
         String temp;
-       
-        
         return ok().body(mStr.flux().flatMap(str -> publicRepository
-        .selectRequestsByTagContext(str)), Request.class);
+        .selectRequestsByTagContext(str)).collectList(), Request.class);
     }
 
+    
     @Transactional
     public Mono<ServerResponse> deleteRequestWhenCancel(ServerRequest req) {
         return ok().body( req.bodyToMono(Integer.class)
@@ -114,6 +119,8 @@ public class RequestHandler {
         }), Integer.class);
     }
 
+
+    
 
 
 }

@@ -49,12 +49,12 @@ public class UserHandler  {
             BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
             u.setUserPassword(passwordEncoder.encode(u.getUserPassword()));
             Mono<User> rs = databaseClient
-                    .execute("INSERT INTO USER(userId, userPassword, userName, userEmail) VALUES (:userId,:userPassword,:userName,:userEmail)")
+                    .execute("INSERT INTO USER(userPassword,userEmail,  userName) VALUES (:userPassword,:userEmail,:userName)")
                     .as(User.class)
-                    .bind("userId", u.getUserId())
+                    .bind("userEmail", u.getUserEmail())
                     .bind("userPassword", u.getUserPassword())
                     .bind("userName", u.getUserName())
-                    .bind("userEmail", u.getUserEmail()).fetch().first(); // 해결봤다
+                    .fetch().first(); // 해결봤다
             return rs;
         }), User.class);
     }
@@ -83,10 +83,10 @@ public class UserHandler  {
   
         return ok().cookie(
             ResponseCookie
-            .from("token",jwtProduct.getKey(bUser.getUserId())) 
+            .from("token",jwtProduct.getKey(bUser.getUserEmail()))
             .maxAge(JwtProduct.EXPIRATION_TIME)
             .httpOnly(true)
-            .build()).body(Mono.just(bUser.getIndexId()),Integer.class);   
+            .build()).body(Mono.just(bUser.getUserId()),Integer.class);   
     } 
 
 
@@ -119,10 +119,9 @@ public class UserHandler  {
             return databaseClient
             .execute(
                 "update user set userPassword = : pwd" + 
-                "userEmail = : email userName : name where indexId = :id")
+                "userName : name where userId = :id")
                 .bind("id", mUser.get("id"))
                 .bind("pwd", mUser.get("userPassword"))
-                .bind("email", mUser.get("email"))
                 .bind("name", mUser.get("name"))
                 .fetch().rowsUpdated()
                 .onErrorReturn(0);
@@ -135,7 +134,7 @@ public class UserHandler  {
         Mono<HashMap> userRequest = req.bodyToMono(HashMap.class);
         return ok().body(userRequest.flatMap(mUser -> {
             return databaseClient.execute(
-                "DELETE FROM user WHERE indexId = :id")
+                "DELETE FROM user WHERE userId = :id")
                 .bind("id", mUser.get("id"))
                 .fetch().rowsUpdated()
                 .onErrorReturn(0);
@@ -153,8 +152,8 @@ public class UserHandler  {
 
     public  Mono<ServerResponse> findByPK(ServerRequest req) { 
         return ok().body( databaseClient
-        .execute("select * from user where indexId = :id")
-        .bind("id",req.bodyToMono(Map.class).block().get("id"))
+        .execute("select * from user where userId = :userId")
+        .bind("id",req.bodyToMono(Map.class).block().get("userId"))
         .fetch()
         .first(), User.class);
 
@@ -162,8 +161,8 @@ public class UserHandler  {
 
     public  Mono<ServerResponse> findByUserId(ServerRequest req) { 
         return ok().body( databaseClient
-        .execute("select * from user where userId = :userId")
-        .bind("id",req.bodyToMono(Map.class).block().get("userId"))
+        .execute("select * from user where userEmail = :userEmail")
+        .bind("id",req.bodyToMono(Map.class).block().get("userEmail"))
         .fetch()
         .first(), User.class);
 

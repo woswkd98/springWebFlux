@@ -20,8 +20,8 @@ public interface PublicRepository extends ReactiveCrudRepository<Request,Long> {
 
     // 요청 삽입
     @Query(
-        "insert into Request(requestId, category, context , uploadAt, deadLine, hopeDate, user_indexId )" +
-        "values (:requestId, :category, :context , :uploadAt, :deadLine, :hopeDate, :user_indexId)" 
+        "insert into Request(requestId, category, context , uploadAt, deadLine, hopeDate, user_userId )" +
+        "values (:requestId, :category, :context , :uploadAt, :deadLine, :hopeDate, :user_userId)" 
         )
     public Mono<Integer> requestInsert(
         String requestId,
@@ -36,14 +36,14 @@ public interface PublicRepository extends ReactiveCrudRepository<Request,Long> {
 
     // 요청 삽입후 리턴 id
     // 도저히 LAST_INSERT_ID() 이거 못가져와서 그냥 프로시져에 넣어버렸다
-    @Query("call insertThenReturnId(:category, :context , :uploadAt, :deadLine, :hopeDate, :user_indexId)")
+    @Query("call insertThenReturnId(:category, :context , :uploadAt, :deadLine, :hopeDate, :user_userId)")
     public Mono<Integer> insertThenReturnId(
         String category, 
         String context, 
         String uploadAt,
-        String deadLine,
+        Long deadLine,
         String hopeDate,
-        int user_indexId
+        int user_userId
     );
 
     // 태그로 검색한 요청들

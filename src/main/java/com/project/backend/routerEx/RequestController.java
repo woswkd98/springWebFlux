@@ -25,7 +25,7 @@ public class RequestController {
     //checked
     @Bean 
     public RouterFunction<?> selectRequestByCategory() {
-        return RouterFunctions.route(POST("/null"), requestHandler::selectByCategory);
+        return RouterFunctions.route(POST("/request/category"), requestHandler::selectByCategory);
     }
     
     //checked
@@ -34,10 +34,14 @@ public class RequestController {
         return RouterFunctions.route(GET("/selectAll"),requestHandler::selectAll);
     }
     
+
+    //
     @Bean 
     public RouterFunction<?> selectRequestsByTagContext() {
-        return RouterFunctions.route(POST("/selectRequestByTagContext"),requestHandler::selectRequestsByTagContext);
+        return RouterFunctions.route(POST("/request/selectTag"),requestHandler::selectRequestsByTagContext);
     }
+    // 여기서 부터 
+    @Bean
     public RouterFunction<?> deleteRequestWhenCancel() {
         return RouterFunctions.route(POST("/deleteRequestWhenCancel"),requestHandler::deleteRequestWhenCancel);
     }

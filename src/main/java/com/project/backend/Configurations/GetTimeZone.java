@@ -19,18 +19,30 @@ public class GetTimeZone {
     */
     
     private static DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
+    private static TimeZone seoulTime = TimeZone.getTimeZone("Asia/Seoul");
     public static String getSeoulDate() {
-        TimeZone time;
+
 
         Date date = new Date();
-        time = TimeZone.getTimeZone("Asia/Seoul");
-        System.out.println(time);
-        df.setTimeZone(time);
+
+        df.setTimeZone(seoulTime);
         return df.format(date);
     }
 
-    
+    public static String getTimeToDate(long t) {
+
+        Date date = new Date();
+        date.setTime(t);
+       
+      
+        df.setTimeZone(seoulTime);
+        return df.format(date);
+    }
+
+    public static Long DateToGetTime(Date date) {
+
+        return date.getTime();
+    }
 
 
 }

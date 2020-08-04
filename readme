@@ -161,4 +161,25 @@ WHERE tagId IN (
 https://spring.io/blog/2019/03/05/spring-hateoas-1-0-m1-released hateoas의 webflux 지원 
 
 // webclient랑 같이쓰는게 맞음 hateoas 
+예전에 무심코 dto(vo) 랑 dao를 섞어썼었는데 차이점이 
+dto는 앞단에서 뒷단으로 넘겨줄때의 데이터 형식을 말하는거고 
 
+dao는 뒷단에서 db로 넘겨줄때의 형식을 말하는것이다 
+
+MYSQL 페이징
+https://anomie7.tistory.com/33 리미트를 사용하면 생각보다 쉽게 될듯 5개씩
+
+graph ql webflux를 지원안한다
+// 이거 에러뜬다 (mvc 뭐랑 겹친다고 뜬다 import쪽에서 )
+	<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-hateoas</artifactId>
+		</dependency>
+
+//
+    .bind("category", rs.block())
+       
+        .fetch()
+        .all().collectList() // 이렇게 불러와야한다
+객체로 지정했을 때 string뺴고 안 불러와지는 현상이 있는데 
+		    @Column("hopeDate") // 지정 꼭 해주자 

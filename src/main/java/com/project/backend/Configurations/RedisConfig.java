@@ -6,7 +6,7 @@ import javax.annotation.PreDestroy;
 import org.springframework.context.annotation.Configuration;
 import redis.embedded.RedisServer;
 
-
+/*
 @Configuration
 public class RedisConfig {
     
@@ -23,4 +23,4 @@ public class RedisConfig {
         
 
     }
-}
+}*/
