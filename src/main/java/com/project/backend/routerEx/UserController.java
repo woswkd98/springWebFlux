@@ -18,7 +18,12 @@ import com.project.backend.handlers.UserHandler;
 import com.project.backend.jwt.JwtProduct;
 import com.project.backend.repositories.UserRepository;
 
-
+import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
+import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
+import static org.springframework.web.reactive.function.server.RequestPredicates.PUT;
+import static org.springframework.web.reactive.function.server.RequestPredicates.PATCH;
+import static org.springframework.web.reactive.function.server.RequestPredicates.DELETE;
+import static org.springframework.web.reactive.function.server.RequestPredicates.HEAD;
 
 @Configuration
 class UserController {
@@ -36,56 +41,57 @@ class UserController {
 
     @Bean
     public RouterFunction<?> join() {
-        return route(POST("/user/join"), userHandler::join);
+        return route(PUT("/users"), userHandler::join);
     }
 
     @Bean
     public RouterFunction<?> login() {
-        return route(POST("/user/login"), userHandler::login);
+        return route(GET("/users/:id/:password"), userHandler::login);
     }
     
 
     @Bean
     public RouterFunction<?> logout() {
-        return route(POST("/user/logout"), userHandler::logout);
+        return route(HEAD("/users"), userHandler::logout);
     }
+
 
 
     @Bean
     public RouterFunction<?> verify() {
-        return route(POST("/user/verify"),userHandler::verify);
+        return route(GET("/token"),userHandler::verify);
     }
  
     @Bean 
     public RouterFunction<?> update() {
-        return route(POST("/user/update"),userHandler::update);
+        return route(PATCH("/users"),userHandler::update);
     }
     @Bean
     public RouterFunction<?> delete() {
         
-        return route(POST("/user/delete"), userHandler::delete);
+        return route(DELETE("/users"), userHandler::delete);
     }
     @Bean
     public RouterFunction<?> getAll() {
-        return route(POST("/user/getAll"), userHandler::getAll);
+        return route(GET("/users"), userHandler::getAll);
     }
     @Bean
     public RouterFunction<?> findByPK() {
-        return route(POST("/user/delete"), userHandler::findByPK);
+        return route(GET("/users/:pk"), userHandler::findByPK);
     }
 
     @Bean
     public RouterFunction<?> findByUserId() {
-        return route(POST("/user/findByUserId"), userHandler::findByUserId);    
+        return route(GET("/users/:userId"), userHandler::findByUserId);    
     }
 
     @Bean
     public RouterFunction<?> setUserState() {
-        return route(POST("/user/setUserState"), userHandler::setUserState);    
+        return route(POST("/users/:userState"), userHandler::setUserState);    
     }
     @Bean
     public RouterFunction<?> setSeller() {
-        return route(POST("/user/setSeller"), userHandler::setSeller);    
+        return route(POST("/user/"), userHandler::setSeller);    
     }
     
 }

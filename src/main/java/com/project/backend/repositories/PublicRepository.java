@@ -112,6 +112,9 @@ public interface PublicRepository extends ReactiveCrudRepository<Request,Long> {
     @Query("select r.* from request r order by r.deadLine")
     public Flux<Request> selectAllOrderByDeadLine();
 
+    // pk로 검색
+    @Query("select r.* from request r where r.requestId = :id")
+    public Mono<Request> findRequestByPk(int requestId);
     // bidding 삽입
     @Query("insert into bidding (uploadAt,price,request_requestId, user_userId)"
     + " values (uploadAt,price, request_requestId, user_userId)")
@@ -130,6 +133,8 @@ public interface PublicRepository extends ReactiveCrudRepository<Request,Long> {
     public Mono<Integer> deleteBiddingByRequestId(int requestId);
 
 
+    @Query("select * from request limit :start, :size")
+    public Flux<Request> selectRequestByLimit(int start, int size);
 
     // 태그 id로 검색
     @Query("Select t.* from tag t where t.tagId = :tagId")
@@ -204,7 +209,5 @@ public interface PublicRepository extends ReactiveCrudRepository<Request,Long> {
     
     //리뷰 삭제
     @Query("delete from review where reviewId = :reviewId")
-    public Mono<Integer> delete(int reviewId);
-    
-
+    public Mono<Integer> deleteReview(int reviewId);
 }

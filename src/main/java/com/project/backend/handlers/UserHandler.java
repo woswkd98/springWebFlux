@@ -38,14 +38,9 @@ public class UserHandler  {
         this.publicRepository = publicRepository;
     }
 
-
     public Mono<ServerResponse> join(ServerRequest req) { 
         Mono<User> insertPub = req.bodyToMono(User.class);
         return ok().body(insertPub.flatMap(u -> {
-
-            System.out.println(u.getUserId());
-            System.out.println(u.getUserPassword());
-
             BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
             u.setUserPassword(passwordEncoder.encode(u.getUserPassword()));
             Mono<User> rs = databaseClient
@@ -60,22 +55,20 @@ public class UserHandler  {
     }
 
 
-    public Mono<ServerResponse> login(ServerRequest req) {
-        Mono<LoginModel> mLogin = req.bodyToMono(LoginModel.class);
-
-        Mono<User> user = mLogin.flatMap(lm -> { 
-            return publicRepository.findByUserId(lm.getId())
+    public Mono<ServerResponse> login(ServerRequest req) { 
+        Mono<User> user = 
+             publicRepository.findByUserId(req.queryParam("id").get())
                 .flatMap(nu -> {
 
                 BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     
-                if (!passwordEncoder.matches(lm.getPassword(), nu.getUserPassword())) {
+                if (!passwordEncoder.matches(req.queryParam("password").get(), nu.getUserPassword())) {
                     return Mono.just(nu);
                 }
                 return null;
             });
             
-        });        
+       
         
         User bUser = user.block();
 
@@ -130,7 +123,6 @@ public class UserHandler  {
 
    
     public Mono<ServerResponse> delete(ServerRequest req) { 
- 
         Mono<HashMap> userRequest = req.bodyToMono(HashMap.class);
         return ok().body(userRequest.flatMap(mUser -> {
             return databaseClient.execute(
@@ -165,7 +157,6 @@ public class UserHandler  {
         .bind("id",req.bodyToMono(Map.class).block().get("userEmail"))
         .fetch()
         .first(), User.class);
-
     }
 
     public  Mono<ServerResponse> setUserState(ServerRequest req) {

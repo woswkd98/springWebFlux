@@ -182,4 +182,8 @@ graph ql webflux를 지원안한다
         .fetch()
         .all().collectList() // 이렇게 불러와야한다
 객체로 지정했을 때 string뺴고 안 불러와지는 현상이 있는데 
-		    @Column("hopeDate") // 지정 꼭 해주자 
+		    @Column("hopeDate") // 지정 꼭 해주자
+//http RESTAPI
+			https://javaplant.tistory.com/18 
+
+			https://ryan-han.com/post/translated/pathvariable_queryparam/
