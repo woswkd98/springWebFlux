@@ -51,6 +51,8 @@ public class RequestHandler {
     public Mono<ServerResponse> insert(ServerRequest req) {
     
     return ok().body(req.bodyToMono(RequestGetter.class).flatMap(map -> {
+        System.out.println(1245);
+        
         return publicRepository.insertThenReturnId(
             map.getCategory(), 
             map.getContext(),
@@ -92,7 +94,8 @@ public class RequestHandler {
 
     public Mono<ServerResponse> selectAll(ServerRequest req) {
         Flux<Request> rs = publicRepository.selectAllOrderByDeadLine();
-        return ok().body(rs, Request.class);
+        return ok().body(rs.collectList()
+        , Request.class);
     }
 
     public Mono<ServerResponse> findByPK(ServerRequest req) {
@@ -111,24 +114,24 @@ public class RequestHandler {
     @Transactional
     public Mono<ServerResponse> deleteRequestWhenCancel(ServerRequest req) {
         int i = Integer.valueOf(req.queryParam("requestId").get());
+        System.out.println(i);
         return ok().body(
             publicRepository.updateTagWhenCancel(i)//  태그 업데이트된거 취소시키고(requestCount + 1 된것을 다시 되돌리고)
             .then(publicRepository.deleteTagRequestCount(0)) // 0이면 얘가 삽입되고 생성된거 그래서 삭제 
             .then(publicRepository.deleteReqHasTag(i)) // request_has_tag 삭제 
             .then(publicRepository.deleteBiddingByRequestId(i))
-            .then(publicRepository.deleteRequest(i)) // request  삭제 
+            .then(publicRepository.deleteRequest(i)) // request  삭제
+            
         , Integer.class);
     }
 
     public Mono<ServerResponse> getRequestsPaging(ServerRequest req) {
-        int i = Integer.valueOf(req.queryParam("requestId").get());
-        return ok().body(
-            publicRepository.updateTagWhenCancel(i)//  태그 업데이트된거 취소시키고(requestCount + 1 된것을 다시 되돌리고)
-            .then(publicRepository.deleteTagRequestCount(0)) // 0이면 얘가 삽입되고 생성된거 그래서 삭제 
-            .then(publicRepository.deleteReqHasTag(i)) // request_has_tag 삭제 
-            .then(publicRepository.deleteBiddingByRequestId(i))
-            .then(publicRepository.deleteRequest(i)) // request  삭제 
-        , Integer.class);
+        Flux<Request> rs = publicRepository.selectRequestByLimit(
+            Integer.valueOf(req.queryParam("start").get()), 
+            Integer.valueOf(req.queryParam("size").get())
+            );
+        return ok().body(rs.collectList()
+        , Request.class);
     }
 
 }

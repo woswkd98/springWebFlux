@@ -1,47 +1,157 @@
+  join= () => {
+    Axios.put("/users"
+    ,{userEmail :"asaerzyaerydtg", userPassword : "ratg", userName : "aet"}
+    ).then(a=> {
+      console.log(a);
+    })
+  }
+
+  login= () => {
+    Axios.get("/users/:id/:password" ,
+    {params : {id : "asetg", password:"ewtgwet"} }
+    ).then(a=> {
+      console.log(a);
+    })
+  }
+  logout = () => {
+ 
+    Axios.head("/users"
+    ).then(a=> {
+      console.log(a);
+    })
+  }
+
+  verify =() => {
+    Axios.head("/token"
+    ).then(a=> {
+      console.log(a);
+    })
+  }
+
+  delete = () => {
+    Axios.delete("/users"
+    ).then(a=> {
+      console.log(a);
+    })
+  }
+  getAll = () => {
+    Axios.get("/users"
+    ).then(a=> {
+      console.log(a);
+    })
+  }
+  findByPk = () => {
+    Axios.get("/users/:pk",{params : {pk : 1}}
+    ).then(a=> {
+      console.log(a);
+    })
+
+  }
+
+  findByUserId = () => {
+    Axios.get("/users/:userId",{params : {userId : 1}}
+    ).then(a=> {
+      console.log(a);
+    })
+
+  }
+
+  setUserState = () => {
+    Axios.get("/users/:userState",{params : {userState : 1}}
+    ).then(a=> {
+      console.log(a);
+    })
+
+  }
 
 
-베이스 경로 /user
-
-로그인 
-/login
-let datas = { 
-            id : "zxcv", 
-            password :1234, //"1234ttac321",
-};
-
-res -> indexId // 혹시 검색용으로 필요할까봐 넘겨줌 
-
-회원가입
- /join
-let datas = { 
-    index : 0,
-    userId : "zxcv", 
-    userPassword : "1234",
-    userName : "asdfg",
-    userEmail : "woswkd98@naver.com"
-}
-//logout
-/logout
-
-토큰 검사
-/verify
-{id : "asdf"} // 토큰은 쿠키에서 찾음
 
 
 
 
-리퀘스트 베이스 경로 /request
-/insert
+// 요청부분
+  insert= () => {
+    Axios.put("/requests"
+    ,{userId : 1, context :"asaerzyaerydtg", category : "ratg", deadline : new Date().getTime(), hopeDate : "2017-02-02"
+    , tags : ["awet","attwet"]}
 
+    ).then(a=> {
+      console.log(a);
+    })
+  }
+  list= () => {
+    Axios.get("/requests").then(
+      a=>console.log(a))};
+  keywordCategory= () => {
+    Axios.get("/requests/:category",{
+    params: {
+      category: "cccc"
+    }}
+    ).then(a=> {
+      // deadline은 longtype으로 줄거임
+      console.log( a)
+  
+    })
+  }
+  listRequestKeywordTag = () => {
+    Axios.get("/requests/:tag" ,{
+      params: {
+      tag: "cccc"
+    }}
+    ).then(a=> {
+      console.log(a);
+    })
+  }
 
+  findByRequestId = () => {
+    Axios.get("/requests/:requestId" ,{
+      params: {
+      requestId: "cccc"
+    }}
+    ).then(a=> {
+      console.log(a);
+    })
+  }
 
+  //  요청을 만들었다가 삭제할때 쓰세요 
+  reqDel = () => {
+    Axios.delete("/requests/:requestId" ,{
+      params: {
+        requestId: 37
+    }}
+    ).then(a=> {
+      console.log(a);
+    }) 
+  }
+  //
+  pageing = () => {
+    Axios.get("/requests/:start/:size" , {
+      params: {
+        start: 0,
+        size : 3,
+    }}
+    ).then(a=> {
+      console.log(a);
+    }) 
+  }
+  
+  // update seller 
 
+  updateSeller = () => {
+    Axios.put("/sellers" ,{ 
+       portfolio : "qawet",
+       imageLink : "qwet",
+       imageCount :1,
+       userId :1,
+    }
+     
+    ).then(a=> {
+      console.log(a);
+    }) 
+  }
 
-/selectAll
-select r.* from request r order by r.deadLine desc 내림차순임 기본이 
+  // 입찰 부분만 추가 예정
+ 
+ 
+ 
 
-/selectByCategory 
-카테고리 순 정렬  
-{category : "IT"} 
-
-/selectRequestsByTagContext 태그의 문자열과 같은 요청들을 검색 

@@ -28,7 +28,7 @@ public interface PublicRepository extends ReactiveCrudRepository<Request,Long> {
         String category, 
         String context, 
         String uploadAt,
-        String deadLine,
+        Long deadLine,
         String hopeDate,
         int user_indexId 
     );
@@ -82,12 +82,12 @@ public interface PublicRepository extends ReactiveCrudRepository<Request,Long> {
 
     //요청 취소했을 때 태그 업데이트 
     @Query(
-        "UPDATE tag"+ 
-		"SET requestCount = requestCount - 1"+
+        "UPDATE tag "+ 
+		"SET requestCount = requestCount - 1 "+
 		"WHERE tagId IN ("+
 		"	SELECT tagId FROM (SELECT t.tagId FROM request r "+
 		"	INNER JOIN request_has_tag rht "+
-		"	ON r.requestId = rht.request_requestId"+
+		"	ON r.requestId = rht.request_requestId "+
 		"	INNER JOIN tag t "+
 		"	ON t.tagId = rht.tag_tagId "+
 		"	WHERE r.requestId = :requestId "+
@@ -133,9 +133,6 @@ public interface PublicRepository extends ReactiveCrudRepository<Request,Long> {
     public Mono<Integer> deleteBiddingByRequestId(int requestId);
 
 
-    @Query("select * from request limit :start, :size")
-    public Flux<Request> selectRequestByLimit(int start, int size);
-
     // 태그 id로 검색
     @Query("Select t.* from tag t where t.tagId = :tagId")
     public Mono<Tag> selectByTagId(int tagId);
@@ -161,23 +158,10 @@ public interface PublicRepository extends ReactiveCrudRepository<Request,Long> {
     @Query("call insertTag(:inContext, :requestId)")
     public Mono<Integer> insertTag(String inContext, int requestId);
 
-    // 판매자 삽입
-    @Query(
-        "insert into seller (portfolio,imageLink,imageCount)" +
-        "values (:portfolio, :imageLink, :imageCount)"
-    )
-    public Mono<Integer> insertSeller(String portfolio,String imageLink, int imageCount);
-
-
-    // 유저 아이디로 찾기 
-    @Query("select u from User u where u.indexId = :id")
-    Mono<User> findByUserId(String id);
-
-    // 유저에 판매자 설정
-    @Query(
-        "update set user seller_sellerId = :sellerId where indexId = :indexId"
-    )
-    public Mono<Integer> updateUserToSeller(int sellerId, int indexId);
+  
+   // 유저 아이디로 찾기 
+   @Query("select * from user  where userId = :id")
+   Mono<User> findByUserPk(int id);
     
     /*
     IN inPortfolio VARCHAR(100),
@@ -186,8 +170,6 @@ public interface PublicRepository extends ReactiveCrudRepository<Request,Long> {
 	IN inSellerGrade INT,
 	IN inReviewerCount INT
     */
-    @Query("call insertSellerThenReturnId(:portfolio,:imageLink,:imageCount)")
-    public Mono<Integer> insertSellerThenReturnId(String portfolio, String imageLink,int imageCount);
 
     // 유저의 회원 상태 결정 (0이면 일반 탈퇴의 경우 1이면 회원 상태 2면 블랙리스트 추가 등등)
     @Query("update set user isWithdraw = :isWithdraw  where indexId = :indexId")
@@ -210,4 +192,18 @@ public interface PublicRepository extends ReactiveCrudRepository<Request,Long> {
     //리뷰 삭제
     @Query("delete from review where reviewId = :reviewId")
     public Mono<Integer> deleteReview(int reviewId);
+
+
+    @Query("select * from request limit :start, :size")
+    public Flux<Request> selectRequestByLimit(int start, int size);
+
+    //  유저 판매자로 업데이트
+    @Query("CALL insertSellerThenUpdateUser(:portfolio,:imageLink,:imageCount,:userId)")
+    public Mono<Integer> insertSeller(
+        String portfolio,
+        String imageLink,
+        int imageCount,
+        int userId
+    );
+
 }

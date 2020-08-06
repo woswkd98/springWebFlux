@@ -54,7 +54,7 @@ public class RequestController {
 
     @Bean
     public RouterFunction<?> paging() {
-        return RouterFunctions.route(GET("/requests/:start/:size"),requestHandler::findByPK);
+        return RouterFunctions.route(GET("/requests/:start/:size"),requestHandler::getRequestsPaging);
     }
 
 }

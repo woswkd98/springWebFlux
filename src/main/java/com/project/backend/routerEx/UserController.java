@@ -91,7 +91,7 @@ class UserController {
     }
     @Bean
     public RouterFunction<?> setSeller() {
-        return route(POST("/user/"), userHandler::setSeller);    
+        return route(PUT("/sellers"), userHandler::setSeller);    
     }
     
 }

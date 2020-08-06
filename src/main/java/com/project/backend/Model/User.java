@@ -26,15 +26,16 @@ import lombok.Setter;
 @Table("user")
 public class User {
 
-  
-    private int userId;
     
+    @Column("userId")
+    private int userId;
+    @Column("userEmail")
     private String userEmail; 
     
-  
+    @Column("userPassword")
     private String userPassword;
-
-   
+    
+    @Column("userName")
     private String userName;
 
 }

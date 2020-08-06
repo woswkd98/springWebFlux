@@ -57,7 +57,7 @@ public class UserHandler  {
 
     public Mono<ServerResponse> login(ServerRequest req) { 
         Mono<User> user = 
-             publicRepository.findByUserId(req.queryParam("id").get())
+             publicRepository.findByUserPk(Integer.valueOf(req.queryParam("id").get()))
                 .flatMap(nu -> {
 
                 BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -167,15 +167,29 @@ public class UserHandler  {
 
     public Mono<ServerResponse> setSeller(ServerRequest req) {
         Mono<Map> mMap = req.bodyToMono(Map.class);
+        System.out.println(mMap.block().get("userId"));
         return ok().body(
             mMap.flatMap(map -> {
-                Mono<Integer> mId =  publicRepository.insertSellerThenReturnId(
-                    map.get("portfolio").toString(),
-                    map.get("imageLink").toString(),
-                    (int)map.get("imageCount")
-                );
+                System.out.println("-------------------------------------------");
+       
+               return publicRepository.findByUserPk((int)map.get("userId")).cache()
+                .flatMap(user-> {
+                    System.out.println(123);
+                    if(user.getUserId() == -1) return Mono.just(user.getUserId() );
+
+                    
+                    return publicRepository.insertSeller(
+                        map.get("portfolio").toString(),
+                        map.get("imageLink").toString(),
+                        (int)map.get("imageCount"),
+                        (int)map.get("userId")
+                    );
                 
-                return mId.flatMap(id -> publicRepository.updateUserToSeller(id,(int)map.get("indexId")));
+                     
+                });
+               
+               
+
             }), Integer.class);
 
     }

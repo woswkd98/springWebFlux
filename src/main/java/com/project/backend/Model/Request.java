@@ -22,24 +22,22 @@ public class Request {
 
     @Column("requestId")
     private int requestId;
-
+    @Column("category")
+    private String category;
     @Column("context")
     private String context;
     
-    @Column("cateory")
-    private String category;
+
 
     @Column("uploadAt")
-    @DateTimeFormat(pattern = "yyyy-MM-dd kk:mm:ss")
-    private LocalDateTime uploadAt;
+    private String uploadAt;
     
     @Column("deadLine")
-    private LocalDateTime deadLine;
+    private Long deadLine;
     
     @Column("hopeDate")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate hopeDate;
- 
+    private String hopeDate;
+    @Column("user_indexId")
     private int user_indexId;
 
 }
