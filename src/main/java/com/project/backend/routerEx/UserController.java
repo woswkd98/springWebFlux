@@ -12,11 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import org.springframework.data.r2dbc.core.DatabaseClient;
-
 import com.project.backend.handlers.UserHandler;
 import com.project.backend.jwt.JwtProduct;
-import com.project.backend.repositories.UserRepository;
 
 import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
 import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
@@ -36,9 +33,6 @@ class UserController {
        
     }
 
-    // 
-    
-
     @Bean
     public RouterFunction<?> join() {
         return route(PUT("/users"), userHandler::join);
@@ -49,13 +43,10 @@ class UserController {
         return route(GET("/users/:id/:password"), userHandler::login);
     }
     
-
     @Bean
     public RouterFunction<?> logout() {
         return route(HEAD("/users"), userHandler::logout);
     }
-
-
 
     @Bean
     public RouterFunction<?> verify() {
@@ -89,6 +80,7 @@ class UserController {
     public RouterFunction<?> setUserState() {
         return route(POST("/users/:userState"), userHandler::setUserState);    
     }
+
     @Bean
     public RouterFunction<?> setSeller() {
         return route(PUT("/sellers"), userHandler::setSeller);    

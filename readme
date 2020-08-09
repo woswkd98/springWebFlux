@@ -187,3 +187,19 @@ graph ql webflux를 지원안한다
 			https://javaplant.tistory.com/18 
 
 			https://ryan-han.com/post/translated/pathvariable_queryparam/
+
+
+			메신저에 대한 
+			기본소양
+			https://blog.sendbird.com/ko/%EC%9E%90%EC%B2%B4-or-%EC%99%B8%EC%A3%BC%EA%B0%9C%EB%B0%9C-%EC%B9%B4%ED%86%A1%EA%B3%BC-%EA%B0%99%EC%9D%80-%EB%A9%94%EC%8B%A0%EC%A0%80-%EC%96%B4%ED%94%8C%EC%9D%84-%EA%B0%9C%EB%B0%9C%ED%95%98%EA%B8%B0/
+
+			// redis 사용 확인			
+			https://daddyprogrammer.org/post/4056/reactive-redis/
+
+//  한국 공식인진 모르겠지만 자료쓰는 샘플이 한글로 다있다 
+			http://redisgate.kr/redis/clients/lettuce_intro.php
+
+// 임베디드 설정부분
+			https://blog.naver.com/gngh0101/221780936975
+			리액티브 설정 참고 
+			https://daddyprogrammer.org/post/4056/reactive-redis/

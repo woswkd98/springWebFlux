@@ -34,7 +34,7 @@ public class GetTimeZone {
         Date date = new Date();
         date.setTime(t);
        
-      
+        
         df.setTimeZone(seoulTime);
         return df.format(date);
     }

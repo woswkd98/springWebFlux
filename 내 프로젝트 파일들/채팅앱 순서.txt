@@ -1,0 +1,23 @@
+채팅앱 구현
+redis로 로그인된 유저들의 목록을 저장할 필요가 있다 (이 때 토큰관리도 한번 만들어볼 예정)
+key userId를 저장(인덱스) value 토큰 저장자료구조는 sortedSet (index, token)
+
+(일반적 db mongo, mysql 같은)
+chat data 형식 (roomId, userid, context, isRead)
+
+redis chatUserList
+key : roomId value : int[] 
+
+1 : 1 채팅방에 들어가면 채팅을 실시간으로 건다 (채팅방에 들어가는 순간 roomId로 상대방이 있는지 확인한다)
+ -> 대화를 한다(채팅은 redis에 저장했다가 주기적으로 db에 저장한다) -> 채팅방을 나가면 
+종료한다 
+
+1 : 1 채팅방에 들어가면 채팅을 실시간으로 건다 -> 없다 -> 읽음을 false로 놓고 db에 저장한다
+
+
+보여줄 때 
+내가 채팅방에 들어가서 보는순간 안 읽은것은 읽은것으로 표시하고 페이징으로 10개씩 보여준다 (시간별 정렬)
+
+ 
+
+
