@@ -145,7 +145,7 @@ public class UserHandler  {
     public  Mono<ServerResponse> findByPK(ServerRequest req) { 
         return ok().body( databaseClient
         .execute("select * from user where userId = :userId")
-        .bind("id",req.bodyToMono(Map.class).block().get("userId"))
+        .bind("id",req.queryParam("pk").get())
         .fetch()
         .first(), User.class);
 
@@ -154,7 +154,7 @@ public class UserHandler  {
     public  Mono<ServerResponse> findByUserId(ServerRequest req) { 
         return ok().body( databaseClient
         .execute("select * from user where userEmail = :userEmail")
-        .bind("id",req.bodyToMono(Map.class).block().get("userEmail"))
+        .bind("id",req.queryParam("userId").get())
         .fetch()
         .first(), User.class);
     }
@@ -167,7 +167,7 @@ public class UserHandler  {
 
     public Mono<ServerResponse> setSeller(ServerRequest req) {
         Mono<Map> mMap = req.bodyToMono(Map.class);
-        System.out.println(mMap.block().get("userId"));
+        mMap.block().get("userId");
         return ok().body(
             mMap.flatMap(map -> {
                 System.out.println("-------------------------------------------");

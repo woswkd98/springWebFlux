@@ -203,3 +203,11 @@ graph ql webflux를 지원안한다
 			https://blog.naver.com/gngh0101/221780936975
 			리액티브 설정 참고 
 			https://daddyprogrammer.org/post/4056/reactive-redis/
+			감으로는 레디스 구조가 데이터 집합의  key가 있고 그 키안에 
+			key와 value로 이루어진 데이터가 있다  
+
+			일단 리액티브 레디스를 임베디드로 쓰려고했는데 내가 잘못했는지 안된다 
+			그런데 더 애매한건 얘네가 windows를 지원 안한다 ㅡㅡ (설치버전 3.0 현재버전 6.0)
+			따라서 도커형식으로 이미지 만들어서 설치예정 
+			도커 툴박스 사용
+			https://4coops.tistory.com/entry/VirtualBox-Won%E2%80%99t-Run-rawmode-unavailable-courtesy-of-HyperV
