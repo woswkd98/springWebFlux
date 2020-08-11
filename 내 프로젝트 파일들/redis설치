@@ -1,0 +1,12 @@
+도커 툴박스 사용
+
+하이퍼 v 설정 다 꺼주고 
+설치후에 
+docker pull redis
+Using default tag: latest
+
+# docker run --name myredis -d -p 6379:6379 redis
+https://4coops.tistory.com/entry/VirtualBox-Won%E2%80%99t-Run-rawmode-unavailable-courtesy-of-HyperV
+도커에서 내가 저장한걸 볼 방법이 없으므로 
+gui도 깐다 
+https://www.electronjs.org/apps/p3x-redis-ui

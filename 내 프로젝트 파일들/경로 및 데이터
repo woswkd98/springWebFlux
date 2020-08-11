@@ -149,6 +149,32 @@
       console.log(a);
     }) 
   }
+  
+  // 이메일 보내기
+  email = () => {
+    Axios.get("/email/:email" ,{ 
+      params: { email : "woswkd98@naver.com"}
+    }).then(a=> {
+      console.log(a);
+    }) 
+  }
+  // 이메일 검증 
+  emailVerify = () => {
+    Axios.get("/email/:authId" ,{ 
+      params: { authId : "66119"}
+    }).then(a => {
+      console.log(a);
+    });
+  }
+  // 패스워드 변경
+  updateUserPassword = () => {
+    Axios.get("/email/:userId/:newPassword" ,{ 
+      params: { userId : "8", newPassword : "tesaetg"}
+    }).then(a => {
+      console.log(a);
+    });
+
+  }
 
   // 입찰 부분만 추가 예정
  

@@ -72,7 +72,6 @@ public class UserHandler  {
         Mono<User> user = 
              publicRepository.findByUserPk(Integer.valueOf(req.queryParam("id").get()))
                 .flatMap(nu -> {
-
                 BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
               
                 if (!passwordEncoder.matches(req.queryParam("password").get(), nu.getUserPassword())) {
