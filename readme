@@ -211,3 +211,9 @@ graph ql webflux를 지원안한다
 			따라서 도커형식으로 이미지 만들어서 설치예정 
 			도커 툴박스 사용
 			https://4coops.tistory.com/entry/VirtualBox-Won%E2%80%99t-Run-rawmode-unavailable-courtesy-of-HyperV
+docker run -p 6379:6379 --rm --name redis redis
+
+이메일 인증 완료 
+이메일인증은 랜덤으로 0 ~ 100000 - 1의 숫자를 랜덤으로 뽑아서
+그걸 레디스에 이메일과 함께 저장시켜놨다가 
+그걸 불러다가 검증시키고 나중에 삭제한다 따로 만료기간을 줄 수도 있지만 일단 급하므로 이렇게 해결함

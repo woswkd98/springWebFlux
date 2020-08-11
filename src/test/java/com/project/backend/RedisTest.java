@@ -61,7 +61,7 @@ public class RedisTest {
 
         // previous key delete - sync
         reactiveRedisTemplate.delete(cacheKey);
-
+            
         // async process
         StepVerifier.create(hashOps.putAll(cacheKey, setDatas)).expectNext(true).verifyComplete();
         StepVerifier.create(reactiveRedisTemplate.type(cacheKey)).expectNext(DataType.HASH).verifyComplete();

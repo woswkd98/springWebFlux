@@ -77,4 +77,6 @@ public class RedisConfig {
 
         return new ReactiveRedisTemplate<>(connectionFactory, serializationContext);
     }
+
+   
 }

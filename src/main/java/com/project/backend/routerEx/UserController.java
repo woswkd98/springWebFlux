@@ -85,5 +85,16 @@ class UserController {
     public RouterFunction<?> setSeller() {
         return route(PUT("/sellers"), userHandler::setSeller);    
     }
-    
+    @Bean
+    public RouterFunction<?> emailAuth() {
+        return route(GET("/email/:email"), userHandler::emailAuth);    
+    }
+    @Bean
+    public RouterFunction<?> emailAuthVerify() {
+        return route(GET("/email/:authId"), userHandler::emailAuthVerify);    
+    }
+    @Bean
+    public RouterFunction<?> changePwd() {
+        return route(GET("/email/:userId/:newPassword"), userHandler::updatePwd);    
+    }
 }

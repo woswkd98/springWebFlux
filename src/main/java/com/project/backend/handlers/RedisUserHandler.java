@@ -25,7 +25,7 @@ public class RedisUserHandler {
     private ReactiveRedisTemplate<String,String> reactiveRedisTemplate;
 
     public Mono<ServerResponse> test12354(ServerRequest req) {
-        System.out.println("________________________________-------------------------------------------------------------------------------------------------------------------------");
+       
         ReactiveHashOperations<String, String, String> hashOps = reactiveRedisTemplate.opsForHash();
         String cacheKey = "valueHash";
         Map<String, String> setDatas = new HashMap<>();
@@ -40,8 +40,8 @@ public class RedisUserHandler {
         System.out.println("awetawete" +  hashOps.size(cacheKey).block());
        
         return ok().body(
-            hashOps.get(cacheKey,"key_" + 1
-        ).toString(),String.class);
+          hashOps.get("valueHash", "key_"+1)
+        ,String.class);
 
     }
 
