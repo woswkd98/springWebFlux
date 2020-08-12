@@ -1,4 +1,4 @@
-package com.project.backend;
+package com.project.backend.RedisTest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -40,15 +40,16 @@ import org.junit.jupiter.api.Test;
 
 @Slf4j
 @SpringBootTest
-public class RedisTest {
+public class RedisBaseTest {
 
     @Autowired
-    private ReactiveRedisTemplate<String,String> reactiveRedisTemplate;
+    private ReactiveRedisTemplate<String, String> reactiveRedisTemplate;
     
  
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
- 
+     
+
     @Test 
     public void opsHashUser() {
      

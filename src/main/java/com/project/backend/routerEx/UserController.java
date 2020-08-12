@@ -68,17 +68,17 @@ class UserController {
     }
     @Bean
     public RouterFunction<?> findByPK() {
-        return route(GET("/users/:pk"), userHandler::findByPK);
+        return route(GET("/users/{pk}"), userHandler::findByPK);
     }
 
     @Bean
     public RouterFunction<?> findByUserId() {
-        return route(GET("/users/:userId"), userHandler::findByUserId);    
+        return route(GET("/users/{userId}"), userHandler::findByUserId);    
     }
 
     @Bean
     public RouterFunction<?> setUserState() {
-        return route(POST("/users/:userState"), userHandler::setUserState);    
+        return route(POST("/users/{userState}"), userHandler::setUserState);    
     }
 
     @Bean

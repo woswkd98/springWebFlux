@@ -34,12 +34,16 @@ public class Email {
 
     String host = "smtp.naver.com";
     final String username = "woswkd98";
-    final String password = "3208WLs03!";
+    final String password = "125";
 
     int port = 465;
 
-    @Autowired
-    ReactiveRedisTemplate<String, String> reactiveRedisTemplate;
+
+    private final ReactiveRedisTemplate<String, String> reactiveRedisTemplate;
+
+    Email(ReactiveRedisTemplate<String, String> reactiveRedisTemplate) {
+        this.reactiveRedisTemplate = reactiveRedisTemplate;
+    }
     Session session = null;
     public static final String redisKey = "emailConfirm";
     @PostConstruct
@@ -53,12 +57,8 @@ public class Email {
     }
 
     public void sendMail(String email) {
-
-   
-
-        int rand  = (int)(Math.random() * 100000);
         ReactiveHashOperations<String, String, String> hashOps = reactiveRedisTemplate.opsForHash();
-        System.out.println(rand);
+        int rand  = (int)(Math.random() * 100000);
         hashOps.put(redisKey, email ,String.valueOf(rand))
         .flatMap(u -> {
             System.out.println(u + "waettttttttt");
@@ -66,45 +66,51 @@ public class Email {
         }).then(hashOps.size(redisKey).flatMap(u -> {
             System.out.println(u);
             return Mono.just(u);
+        })).then(Mono.defer(()-> {
+            
+            System.out.println(rand);
+            Properties props = System.getProperties();
+            props.put("mail.smtp.host", host);
+            props.put("mail.smtp.port", port);
+            props.put("mail.smtp.auth", "true");
+            props.put("mail.smtp.ssl.enable", "true");
+            props.put("mail.smtp.ssl.trust", host);
+    
+            session = Session.getInstance(props, new javax.mail.Authenticator() {
+                String un = username;
+                String pw = password;
+    
+                protected javax.mail.PasswordAuthentication getPasswordAuthentication() {
+                    return new javax.mail.PasswordAuthentication(un, pw);
+                }
+            });
+            //session.setDebug(true); // for debug
+            Message mimeMessage = new MimeMessage(session);
+            
+            try {
+                mimeMessage.setFrom(new InternetAddress("woswkd98@naver.com"));
+                mimeMessage.setRecipient(Message.RecipientType.TO, new InternetAddress(email));
+    
+               
+            } catch (MessagingException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            try {
+                mimeMessage.setSubject("인증");
+                mimeMessage.setText("인증번호  "  +  rand); 
+                Transport.send(mimeMessage); 
+            } catch (MessagingException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+         
+            return Mono.just(1);
         })).subscribe();
 
-        Properties props = System.getProperties();
-        props.put("mail.smtp.host", host);
-        props.put("mail.smtp.port", port);
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.ssl.enable", "true");
-        props.put("mail.smtp.ssl.trust", host);
+            
 
-        session = Session.getInstance(props, new javax.mail.Authenticator() {
-            String un = username;
-            String pw = password;
-
-            protected javax.mail.PasswordAuthentication getPasswordAuthentication() {
-                return new javax.mail.PasswordAuthentication(un, pw);
-            }
-        });
-        //session.setDebug(true); // for debug
-        Message mimeMessage = new MimeMessage(session);
-        
-     
-        
-        try {
-            mimeMessage.setFrom(new InternetAddress("woswkd98@naver.com"));
-            mimeMessage.setRecipient(Message.RecipientType.TO, new InternetAddress(email));
-
-           
-        } catch (MessagingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        try {
-            mimeMessage.setSubject("인증");
-            mimeMessage.setText("인증번호  "  +  rand); 
-            Transport.send(mimeMessage); 
-        } catch (MessagingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+      
         //session.setDebug(true);
        
     }

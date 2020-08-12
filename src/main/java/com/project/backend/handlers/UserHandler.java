@@ -157,7 +157,7 @@ public class UserHandler  {
     public  Mono<ServerResponse> findByPK(ServerRequest req) { 
         return ok().body( databaseClient
         .execute("select * from user where userId = :userId")
-        .bind("userId",req.queryParam("pk").get())
+        .bind("userId",req.pathVariable("pk"))
         .fetch()
         .first(), User.class);
 
@@ -168,15 +168,14 @@ public class UserHandler  {
     public  Mono<ServerResponse> findByUserId(ServerRequest req) { 
         return ok().body( databaseClient
         .execute("select * from user where userEmail = :userEmail")
-        .bind("userEmail",req.queryParam("userId").get())
+        .bind("userEmail",req.pathVariable("userId"))
         .fetch()
         .first(), User.class);
     }
 
     public  Mono<ServerResponse> setUserState(ServerRequest req) {
-        Mono<Map> mMap = req.bodyToMono(Map.class);
- 
-        return ok().body(mMap.flatMap(u -> publicRepository.updateUserWidthdraw((int)u.get("userState"))), Integer.class);
+        
+        return ok().body(publicRepository.updateUserWidthdraw(Integer.valueOf(req.pathVariable("userState"))), Integer.class);
     }
 
     public Mono<ServerResponse> setSeller(ServerRequest req) {

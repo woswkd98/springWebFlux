@@ -71,10 +71,10 @@ public class RequestHandler {
 
     // bloc고쳐
     public Mono<ServerResponse> selectByCategory(ServerRequest req) {
-        Mono<String> rs = req.bodyToMono(String.class);
+       
 
         return  ok().body(databaseClient.execute("select * from request where category = :category")
-        .bind("category", rs.block())
+        .bind("category", req.pathVariable("category"))
         .fetch()
         .all().collectList() // dl
          , List.class);
@@ -99,7 +99,7 @@ public class RequestHandler {
     }
 
     public Mono<ServerResponse> findByPK(ServerRequest req) {
-        int i = Integer.valueOf(req.queryParam("requestId").get());
+        int i = Integer.valueOf(req.pathVariable("requestId"));
         Mono<Request> rs = publicRepository.findRequestByPk(i);
         return ok().body(rs, Request.class);
     }
@@ -107,13 +107,13 @@ public class RequestHandler {
     @Transactional
     public Mono<ServerResponse> selectRequestsByTagContext(ServerRequest req) {
         return ok().body(publicRepository
-        .selectRequestsByTagContext(req.queryParam("tag").get()).collectList(), Request.class);
+        .selectRequestsByTagContext(req.pathVariable("tag")).collectList(), Request.class);
     }
 
     
     @Transactional
     public Mono<ServerResponse> deleteRequestWhenCancel(ServerRequest req) {
-        int i = Integer.valueOf(req.queryParam("requestId").get());
+        int i = Integer.valueOf(req.pathVariable("requestId"));
         System.out.println(i);
         return ok().body(
             publicRepository.updateTagWhenCancel(i)//  태그 업데이트된거 취소시키고(requestCount + 1 된것을 다시 되돌리고)
@@ -126,9 +126,10 @@ public class RequestHandler {
     }
 
     public Mono<ServerResponse> getRequestsPaging(ServerRequest req) {
+
         Flux<Request> rs = publicRepository.selectRequestByLimit(
-            Integer.valueOf(req.queryParam("start").get()), 
-            Integer.valueOf(req.queryParam("size").get())
+            Integer.valueOf(req.pathVariable("start")), 
+            Integer.valueOf(req.pathVariable("size"))
             );
         return ok().body(rs.collectList()
         , Request.class);

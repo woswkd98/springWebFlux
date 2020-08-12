@@ -24,11 +24,11 @@ public class RequestController {
     public RouterFunction<?> requestInsert() {
         return RouterFunctions.route(PUT("/requests"), requestHandler::insert);
     }
-
+    
     //checked
     @Bean 
     public RouterFunction<?> selectRequestByCategory() {
-        return RouterFunctions.route(GET("/requests/:category"), requestHandler::selectByCategory);
+        return RouterFunctions.route(GET("/requests/{category}"), requestHandler::selectByCategory);
     }
     
     //checked
@@ -40,21 +40,21 @@ public class RequestController {
     //checked
     @Bean 
     public RouterFunction<?> selectRequestsByTagContext() {
-        return RouterFunctions.route(GET("/requests/:tag"),requestHandler::selectRequestsByTagContext);
+        return RouterFunctions.route(GET("/requests/{tag}"),requestHandler::selectRequestsByTagContext);
     }
     // 여기서 부터 
     @Bean
     public RouterFunction<?> deleteRequestWhenCancel() {
-        return RouterFunctions.route(DELETE("/requests/:requestId"),requestHandler::deleteRequestWhenCancel);
+        return RouterFunctions.route(DELETE("/requests/{requestId}"),requestHandler::deleteRequestWhenCancel);
     }
     @Bean
     public RouterFunction<?> findByPk() {
-        return RouterFunctions.route(GET("/requests/:requestId"),requestHandler::findByPK);
+        return RouterFunctions.route(GET("/requests/{requestId}"),requestHandler::findByPK);
     }
 
     @Bean
     public RouterFunction<?> paging() {
-        return RouterFunctions.route(GET("/requests/:start/:size"),requestHandler::getRequestsPaging);
+        return RouterFunctions.route(GET("/requests/{start}/{size}"),requestHandler::getRequestsPaging);
     }
 
 }
