@@ -238,3 +238,4 @@ https://unabated.tistory.com/entry/serialVersionUID-%EC%9A%A9%EB%8F%84
 
 redis pubsub은 일종의 큐잉이 아니다 
 얘네는 sub하는 순간 바로 날려버린다 저장기능이 없다 따라서 얘는 캐싱용으로만 쓰고 RabbitMq로 쓸것이다 
+tes2
