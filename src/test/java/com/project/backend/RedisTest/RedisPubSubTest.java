@@ -54,7 +54,7 @@ public class RedisPubSubTest {
 
         reactiveRedisConnectionFactory
         .getReactiveConnection()
-        .pubSubCommands().
+        .pubSubCommands()
         .subscribe(
             ByteBuffer.wrap("setg".getBytes())).cache().flatMap(test-> {
                 System.out.println("q2522222222222222222222222222222222222");
