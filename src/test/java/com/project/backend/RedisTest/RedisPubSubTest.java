@@ -42,8 +42,6 @@ public class RedisPubSubTest {
         testMessage.setUserId(1);
         testMessage.setIsRead(1);
         testMessage.setUploadAt("setgestte");
-        
-        
         StepVerifier.create(reactiveRedisConnectionFactory
         .getReactiveConnection()
         .pubSubCommands()
@@ -57,8 +55,6 @@ public class RedisPubSubTest {
         .pubSubCommands()
         .subscribe(
             ByteBuffer.wrap("setg".getBytes())).cache().flatMap(test-> {
-                System.out.println("q2522222222222222222222222222222222222");
-                System.out.println(test.getClass().getName());
                 return Mono.just(test);
             }).subscribe();
         

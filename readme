@@ -211,7 +211,7 @@ graph ql webflux를 지원안한다
 			따라서 도커형식으로 이미지 만들어서 설치예정 
 			도커 툴박스 사용
 			https://4coops.tistory.com/entry/VirtualBox-Won%E2%80%99t-Run-rawmode-unavailable-courtesy-of-HyperV
-docker run -p 6379:6379 --rm --name redis redis
+docker run --name redis -d -p 6379:6379 redis
 
 이메일 인증 완료 
 이메일인증은 랜덤으로 0 ~ 100000 - 1의 숫자를 랜덤으로 뽑아서
@@ -238,4 +238,6 @@ https://unabated.tistory.com/entry/serialVersionUID-%EC%9A%A9%EB%8F%84
 
 redis pubsub은 일종의 큐잉이 아니다 
 얘네는 sub하는 순간 바로 날려버린다 저장기능이 없다 따라서 얘는 캐싱용으로만 쓰고 RabbitMq로 쓸것이다 
-tes2
+
+오늘 소스트리 잘못만져서 이미지 다시올림
+
