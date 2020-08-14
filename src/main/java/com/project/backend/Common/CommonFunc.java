@@ -6,7 +6,7 @@ public class CommonFunc {
     public static String sqlWhereInCreater(
         int size, 
         List<String> values,
-        
+        //1
         String name
     ) {
         StringBuilder strbuild = new StringBuilder();
