@@ -62,7 +62,6 @@ public class Fileupload {
         Flux<String> then = req.multipartData().map(it -> it.get("file")).flatMapMany(Flux::fromIterable)
             .cast(FilePart.class).flatMap(it -> {
                 File f = null;
- 
                 String suffix = it.filename();
                 String fileName = "images/" + it.filename();
                 Path path = null;
@@ -75,15 +74,16 @@ public class Fileupload {
                 }
                 f = path.toFile();
                 
-                s3Client.putObject(bucket, it.filename(), f );
-                s3Client.setObjectAcl(bucket, it.filename(),CannedAccessControlList.PublicRead);
+                s3Client.putObject(bucket, it.filename() + 1, f );
+                s3Client.setObjectAcl(bucket, it.filename() + 1,CannedAccessControlList.PublicRead);
+                
                 suffix = s3Client.getUrl(bucket, it.filename()).toString();
                 f.delete();
             return Flux.just(suffix);
         });
-    
         return ok().body(then, String.class);
-
     }
+
+    
 
 }

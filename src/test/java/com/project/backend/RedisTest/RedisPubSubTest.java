@@ -42,21 +42,21 @@ public class RedisPubSubTest {
         testMessage.setUserId(1);
         testMessage.setIsRead(1);
         testMessage.setUploadAt("setgestte");
-        StepVerifier.create(reactiveRedisConnectionFactory
+        System.out.println(reactiveRedisConnectionFactory
         .getReactiveConnection()
         .pubSubCommands()
         .publish(
             ByteBuffer.wrap("setg".getBytes()),
-            ToByteArray.ToByteBuffer(testMessage)
-        )).expectNext(1L).verifyComplete();        
-
-        reactiveRedisConnectionFactory
+            ByteBuffer.wrap("qawetawetawetawet".getBytes())
+        ).then(reactiveRedisConnectionFactory
         .getReactiveConnection()
         .pubSubCommands()
         .subscribe(
-            ByteBuffer.wrap("setg".getBytes())).cache().flatMap(test-> {
-                return Mono.just(test);
-            }).subscribe();
+            ByteBuffer.wrap("setg".getBytes())).flatMap(test-> {
+                return Mono.just(test.getClass());
+        })).block() + " 111111111111111111111111111111111111111111111111111111111111111");
+        
+ 
         
     }
 }

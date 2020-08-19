@@ -38,4 +38,7 @@ public class User {
     @Column("userName")
     private String userName;
 
+    @Column("sellerId")
+    private int sellerId;
+
 }

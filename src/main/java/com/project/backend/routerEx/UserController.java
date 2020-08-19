@@ -59,7 +59,6 @@ class UserController {
     }
     @Bean
     public RouterFunction<?> delete() {
-        
         return route(DELETE("/users"), userHandler::delete);
     }
     @Bean

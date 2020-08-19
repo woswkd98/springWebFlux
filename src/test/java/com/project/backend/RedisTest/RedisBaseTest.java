@@ -69,12 +69,11 @@ public class RedisBaseTest {
         StepVerifier.create(hashOps.size(cacheKey)).expectNext(10L).verifyComplete();
         StepVerifier.create(hashOps.get(cacheKey, "key_5")).expectNext("value_5").verifyComplete();
         StepVerifier.create(hashOps.remove(cacheKey, "key_5")).expectNext(1L).verifyComplete();
-
-        
     }
 
     @Test
     public void opsList() {
+        
         ListOperations<String, String> listOps = redisTemplate.opsForList();
         String cacheKey = "valueList";
         for (int i = 0; i < 10; i++)
@@ -88,5 +87,4 @@ public class RedisBaseTest {
         assertEquals("9", listOps.leftPop(cacheKey));
         assertEquals(true, redisTemplate.delete(cacheKey));
     }
-
 }

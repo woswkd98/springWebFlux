@@ -49,13 +49,12 @@ public class RequestHandler {
     }
 
     public Mono<ServerResponse> insert(ServerRequest req) {
-    
     return ok().body(req.bodyToMono(RequestGetter.class).flatMap(map -> {
         System.out.println(1245);
         
         return publicRepository.insertThenReturnId(
             map.getCategory(), 
-            map.getContext(),
+            map.getDetail(),
             GetTimeZone.getSeoulDate(),
             map.getDeadline(),
             map.getHopeDate(),
@@ -71,14 +70,11 @@ public class RequestHandler {
 
     // bloc고쳐
     public Mono<ServerResponse> selectByCategory(ServerRequest req) {
-       
-
         return  ok().body(databaseClient.execute("select * from request where category = :category")
         .bind("category", req.pathVariable("category"))
         .fetch()
         .all().collectList() // dl
          , List.class);
-       
     }
 
 
@@ -121,12 +117,10 @@ public class RequestHandler {
             .then(publicRepository.deleteReqHasTag(i)) // request_has_tag 삭제 
             .then(publicRepository.deleteBiddingByRequestId(i))
             .then(publicRepository.deleteRequest(i)) // request  삭제
-            
         , Integer.class);
     }
-
+    
     public Mono<ServerResponse> getRequestsPaging(ServerRequest req) {
-
         Flux<Request> rs = publicRepository.selectRequestByLimit(
             Integer.valueOf(req.pathVariable("start")), 
             Integer.valueOf(req.pathVariable("size"))

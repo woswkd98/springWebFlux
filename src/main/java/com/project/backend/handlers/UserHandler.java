@@ -70,17 +70,16 @@ public class UserHandler  {
 
     public Mono<ServerResponse> login(ServerRequest req) { 
         Mono<User> user = 
-             publicRepository.findByUserPk(Integer.valueOf(req.queryParam("id").get()))
+             publicRepository.findByUserPk(Integer.valueOf(req.queryParam("userEmail").get()))
                 .flatMap(nu -> {
                 BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
               
-                if (!passwordEncoder.matches(req.queryParam("password").get(), nu.getUserPassword())) {
+                if (!passwordEncoder.matches(req.queryParam("userPassword").get(), nu.getUserPassword())) {
                     return Mono.just(nu);
                 }
                 return null;
             });
             
-       
         
         User bUser = user.block();
 
@@ -91,7 +90,7 @@ public class UserHandler  {
             .from("token",jwtProduct.getKey(bUser.getUserEmail()))
             .maxAge(JwtProduct.EXPIRATION_TIME)
             .httpOnly(true)
-            .build()).body(Mono.just(bUser.getUserId()),Integer.class);   
+            .build()).body(Mono.just(user),User.class);   
     } 
 
 
@@ -234,15 +233,12 @@ public class UserHandler  {
         
         System.out.println(req.queryParam("userId").get());
         System.out.println(req.queryParam("newPassword").get());
-        return ok().body(databaseClient
-        .execute(  "update user set userPassword = :pwd" + 
+        return ok().body(databaseClient.execute( 
+        "update user set userPassword = :pwd" + 
         " where userId = :userId")
         .bind("userId",req.queryParam("userId").get())
         .bind("pwd", (new BCryptPasswordEncoder()).encode(req.queryParam("newPassword").get()))
         .fetch()
         .first(), User.class);
     }
-
-
-     
 }
