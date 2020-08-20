@@ -34,7 +34,7 @@ public class Email {
 
     String host = "smtp.naver.com";
     final String username = "woswkd98";
-    final String password = "3208WLs03!";
+    final String password = "1231!";
 
     int port = 465;
 
