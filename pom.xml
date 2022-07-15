@@ -22,7 +22,7 @@
 		<dependency>
     		<groupId>com.amazonaws</groupId>
     		<artifactId>aws-java-sdk-s3</artifactId>
-    	<version>1.11.714</version>
+    	<version>1.12.261</version>
 		</dependency>
 		<!--s3에서 얘가 없으면 이미지로 안올라감 -->
         <dependency>
